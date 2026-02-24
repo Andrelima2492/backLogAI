@@ -1,6 +1,5 @@
 package com.nulhart.repository;
 
-import com.nulhart.dto.GameDTO;
 import com.nulhart.model.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
 
