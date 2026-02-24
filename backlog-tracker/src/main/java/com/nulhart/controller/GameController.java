@@ -1,0 +1,54 @@
+package com.nulhart.controller;
+
+import com.nulhart.dto.GameDTO;
+import com.nulhart.model.Game;
+import com.nulhart.model.StatusConstants;
+import com.nulhart.services.GameService;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@RestController
+@RequestMapping("api/v1/games")
+public class GameController {
+    private final GameService gameService;
+
+    public GameController(GameService gameService) {
+        this.gameService = gameService;
+    }
+
+    @GetMapping
+    public List<GameDTO> getGames(){
+        LocalDate startDateAC = LocalDate.parse("2025-11-21");
+        LocalDate endDateAC = LocalDate.parse("2026-02-16");
+        LocalDate startDateOP = LocalDate.parse("2026-02-18");
+        return gameService.getAllGames();
+    }
+
+    @GetMapping("/title/{title}")
+    public GameDTO getGameByTitle(@PathVariable String title) throws ChangeSetPersister.NotFoundException {
+        return gameService.getGameByTitle(title);
+    }
+
+    @GetMapping("{id}")
+    public GameDTO getGameById(@PathVariable Long id) throws ChangeSetPersister.NotFoundException{
+        return gameService.getGameById(id);
+    }
+
+    @GetMapping("/console/{console}")
+    public List<GameDTO> getGamesByConsole(@PathVariable String console){
+        return gameService.getGamesByConsole(console);
+    }
+
+    @GetMapping("/status/{status}")
+    public List<GameDTO> getGamesByStatus(@PathVariable String status){
+        return gameService.getGamesByStatus(status);
+    }
+    @PostMapping
+    public void addNewGame(@RequestBody GameDTO game){
+            gameService.insertGame(game);
+    }
+}
+
