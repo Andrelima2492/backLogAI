@@ -1,17 +1,16 @@
 package com.nulhart.services;
 
 import com.nulhart.dto.GameDTO;
+import com.nulhart.exceptions.GameNotFoundException;
 import com.nulhart.model.Game;
 import com.nulhart.repository.GameRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 @Service
 public class GameService {
@@ -27,23 +26,22 @@ public class GameService {
         }
 
     public void insertGame(GameDTO game) {
-        LocalDate dateOfCompletion = null;
-        if(null != game.getDateOfCompletion()){
-            dateOfCompletion = game.getDateOfCompletion();
+        if(gameRepository.existsByTitle(game.getTitle())){
+            throw new DataIntegrityViolationException("a game already exists with title "+ game.getTitle());
         }
         gameRepository.save( mapFromDTO(game));
     }
 
     public GameDTO getGameByTitle(String title) {
         Optional<Game> game= Optional.of((Game) gameRepository.findGameByTitleIs(title).orElseThrow(
-                ()-> new IllegalStateException(title+"not found")));
+                ()-> new GameNotFoundException("Game with title "+ title +" was not found")));
 
         return mapToDTO(game.get());
     }
 
     public GameDTO getGameById(Long id) {
         Optional<Game> game = Optional.of(gameRepository.findById(id).orElseThrow(()->
-                new IllegalStateException(id+" not found")));
+                new  GameNotFoundException("Game with title "+ id +" was not found")));
         return mapToDTO(game.get());
     }
 
@@ -56,6 +54,9 @@ public class GameService {
     }
 
     public void deleteGameById(Long id) {
+        if(!gameRepository.existsById(id)){
+            throw  new GameNotFoundException("No Game was found with id "+id);
+        }
         gameRepository.deleteById(id);
     }
 
@@ -64,16 +65,25 @@ public class GameService {
     }
 
     public void deleteGameByTitle(String title) {
+       if(!gameRepository.existsByTitle(title)){
+           throw new GameNotFoundException("No game exists with title "+title);
+       }
         gameRepository.deleteGameByTitle(title);
     }
 
     public void insertGames(List<GameDTO> games) {
-        gameRepository.saveAll(games.stream().map(this::mapFromDTO).toList());
+        List<GameDTO> newGamesToAdd = new ArrayList<GameDTO>();
+        for(GameDTO g : games){
+            if(!getAllGames().contains(g)){
+                newGamesToAdd.add(g);
+            }
+        }
+        gameRepository.saveAll(newGamesToAdd.stream().map(this::mapFromDTO).toList());
     }
     @Transactional
     public void editGameById(GameDTO game, Long id)  {
         Optional<Game> entity = Optional.of(gameRepository.findById(id).orElseThrow(()->
-                new IllegalStateException(id+" not found")));
+                new GameNotFoundException("No game exists with id "+id)));
         Game gameEntity = entity.get();
         gameEntity.setConsole(game.getConsole());
         gameEntity.setOpinion(game.getOpinion());
@@ -86,7 +96,7 @@ public class GameService {
     @Transactional
     public void editGameByTitle(GameDTO game, String title) {
         Game entity= Optional.of((Game) gameRepository.findGameByTitleIs(title).orElseThrow(
-                ()-> new IllegalStateException(title+"not found"))).get();
+                ()-> new GameNotFoundException("No game was found with title "+ title))).get();
         entity.setConsole(game.getConsole());
         entity.setOpinion(game.getOpinion());
         entity.setStatus(game.getStatus());

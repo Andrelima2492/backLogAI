@@ -16,4 +16,6 @@ public interface GameRepository extends JpaRepository<Game,Long> {
     List<Game> findGameByStatus(String status);
 
     void deleteGameByTitle(String title);
+
+    boolean existsByTitle(String title);
 }
