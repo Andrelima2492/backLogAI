@@ -50,5 +50,26 @@ public class GameController {
     public void addNewGame(@RequestBody GameDTO game){
             gameService.insertGame(game);
     }
+    @PostMapping("/multiple")
+    public void addMultipleGames(@RequestBody List<GameDTO> games){
+        gameService.insertGames(games);
+    }
+
+
+    @DeleteMapping("{id}")
+    public void deleteGameById(@PathVariable Long id){
+        gameService.deleteGameById(id);
+    }
+
+    @DeleteMapping
+    public void deleteAllGames(){
+        gameService.deleteAllGames();
+    }
+
+    @DeleteMapping("/title/{title}")
+    public void deleteGameByTitle(@PathVariable String title){
+        gameService.deleteGameByTitle(title);
+    }
+
 }
 

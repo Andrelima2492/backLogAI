@@ -53,6 +53,22 @@ public class GameService {
     public List<GameDTO> getGamesByStatus(String status) {
         return gameRepository.findGameByStatus(status).stream().map(this::mapToDTO).toList();
     }
+
+    public void deleteGameById(Long id) {
+        gameRepository.deleteById(id);
+    }
+
+    public void deleteAllGames() {
+        gameRepository.deleteAll();
+    }
+
+    public void deleteGameByTitle(String title) {
+        gameRepository.findGameByTitleIs(title);
+    }
+
+    public void insertGames(List<GameDTO> games) {
+        gameRepository.saveAll(games.stream().map(this::mapFromDTO).toList());
+    }
     private GameDTO mapToDTO(Game game){
         return new GameDTO(game.getTitle(), game.getConsole(), game.getStatus(), game.getHoursPlayed(),
                 game.getOpinion(), game.getStartDate(), game.getDateOfCompletion());
@@ -62,6 +78,7 @@ public class GameService {
         return new Game(game.getTitle(), game.getConsole(), game.getStatus(), game.getHoursPlayed(), game.getOpinion(),
                 game.getStartDate(), game.getDateOfCompletion());
     }
+
 
 
 }
