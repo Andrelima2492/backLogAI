@@ -28,12 +28,12 @@ public class GameController {
     }
 
     @GetMapping("/title/{title}")
-    public GameDTO getGameByTitle(@PathVariable String title) throws ChangeSetPersister.NotFoundException {
+    public GameDTO getGameByTitle(@PathVariable String title)  {
         return gameService.getGameByTitle(title);
     }
 
     @GetMapping("{id}")
-    public GameDTO getGameById(@PathVariable Long id) throws ChangeSetPersister.NotFoundException{
+    public GameDTO getGameById(@PathVariable Long id) {
         return gameService.getGameById(id);
     }
 
@@ -55,12 +55,10 @@ public class GameController {
         gameService.insertGames(games);
     }
 
-
     @DeleteMapping("{id}")
     public void deleteGameById(@PathVariable Long id){
         gameService.deleteGameById(id);
     }
-
     @DeleteMapping
     public void deleteAllGames(){
         gameService.deleteAllGames();
@@ -71,5 +69,14 @@ public class GameController {
         gameService.deleteGameByTitle(title);
     }
 
+@PutMapping("/title/{title}")
+public void editGameByTitle(@RequestBody GameDTO game, @PathVariable String title){
+        gameService.editGameByTitle(game, title);
+}
+
+    @PutMapping("{id}")
+    public void editGameById(@RequestBody GameDTO game, @PathVariable Long id){
+        gameService.editGameById(game, id);
+    }
 }
 

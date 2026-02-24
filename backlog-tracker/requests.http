@@ -2,24 +2,26 @@
 GET http://localhost:8080
 
 ###
-GET http://localhost:8080/api/v1/games
+GET http://localhost:8080/api/v1/games/title/Assassin's Creed Odyssey
 ###
-DELETE http://localhost:8080/api/v1/games/1
+DELETE http://localhost:8080/api/v1/games/title/
 
 ###
 DELETE http://localhost:8080/api/v1/games
+###
+DELETE http://localhost:8080/api/v1/games/title/Assassin's Creed Odyssey
 ###
 POST http://localhost:8080/api/v1/games
 Content-Type: application/json
 
     {
-      "title": "Assassin's Creed Odyssey",
-      "console": "PS4",
-      "status": "completed",
-      "hoursPlayed": 153,
-      "opinion": "Good Game, love the eagle bearer, a bit too long",
-      "startDate": "2025-11-27",
-      "dateOfCompletion": "2026-02-16"
+      "title": "Prince of Persia: The Lost Crown",
+      "console": "PS5",
+      "status": "playing",
+      "hoursPlayed": 0,
+      "opinion": "",
+      "startDate": "2026-02-24",
+      "dateOfCompletion": ""
     }
 ###
 POST http://localhost:8080/api/v1/games/multiple
@@ -54,3 +56,17 @@ Content-Type: application/json
     "dateOfCompletion": "2026-02-16"
   }
 ]
+
+###
+PUT http://localhost:8080/api/v1/games/title/Assassin's Creed Odyssey
+Content-Type: application/json
+
+{
+    "title": "Assassin's Creed Odyssey",
+    "console": "PS4",
+    "status": "completed",
+    "hoursPlayed": 150,
+    "opinion": "Good Game, love the eagle bearer, a bit too long",
+    "startDate": "2025-11-27",
+    "dateOfCompletion": "2026-02-16"
+  }
