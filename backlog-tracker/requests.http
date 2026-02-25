@@ -2,6 +2,8 @@
 GET http://localhost:8080
 
 ###
+GET http://localhost:8080/api/v1/games/rawg-key
+###
 GET http://localhost:8080/api/v1/games
 ###
 DELETE http://localhost:8080/api/v1/games/title/

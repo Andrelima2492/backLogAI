@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -19,9 +21,15 @@ public class Game {
     @Column(nullable = false)
     private String status;
     private int hoursPlayed;
+    private Integer estimatedPlayTime;
     private String opinion;
     private LocalDate startDate;
     private LocalDate dateOfCompletion;
+    @OneToMany(mappedBy = "parentGame")
+    private List<Game> additions = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name="parent_game_id")
+    private Game parentGame;
 
     public Game() {
     }
