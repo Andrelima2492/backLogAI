@@ -1,6 +1,7 @@
 package com.nulhart.controller;
 
 import com.nulhart.dto.GameDTO;
+import com.nulhart.model.Game;
 import com.nulhart.services.GameService;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,7 @@ public class GameController {
         return gameService.getGamesByStatus(status);
     }
 
+    
   @GetMapping("/dlcs/{rawgId}")
   public List<GameDTO>  getDLCs(@PathVariable Long rawgId){
         return gameService.getDLCs(rawgId);

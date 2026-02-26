@@ -3,10 +3,7 @@ package com.nulhart.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,7 +15,9 @@ import java.util.Objects;
 @Entity
 public class Game {
     @Id
-    Long rawgId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private Long UUID;
+    private Long rawgId;
     @Column(nullable = false, unique = true)
     private String title;
     @Column(nullable = false)

@@ -6,7 +6,7 @@ GET http://localhost:8080/api/v1/games/rawg-key
 ###
 GET http://localhost:8080/api/v1/games
 ###
-DELETE http://localhost:8080/api/v1/games/title/
+DELETE http://localhost:8080/api/v1/games/title?title=Phoenix Wright: Ace Attorney Trilogy
 
 ###
 DELETE http://localhost:8080/api/v1/games
@@ -78,14 +78,14 @@ Content-Type: application/json
 ]
 
 ###
-PUT http://localhost:8080/api/v1/games/title?title=Assassin’s Creed Odyssey – Legacy of the First Blade
+PUT http://localhost:8080/api/v1/games/title?title=Assassin’s Creed Odyssey - The Fate of Atlantis
 Content-Type: application/json
 
 {
-    "title": "Assassin’s Creed Odyssey – Legacy of the First Blade",
+    "title": "Assassin’s Creed Odyssey - The Fate of Atlantis",
     "console": "PS4",
     "status": "completed",
-    "hoursPlayed": 8,
+    "hoursPlayed": 15,
     "opinion": "Good Game, love the eagle bearer, a bit too long",
     "startDate": "2025-11-27",
     "dateOfCompletion": "2026-02-16"
