@@ -1,10 +1,14 @@
 package com.nulhart.services;
 
 import com.nulhart.dto.GameDTO;
+import com.nulhart.dto.RawgDTO;
+import com.nulhart.dto.RawgResponse;
 import com.nulhart.exceptions.GameNotFoundException;
 import com.nulhart.model.Game;
+import com.nulhart.rawg.RawgClient;
 import com.nulhart.repository.GameRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -13,23 +17,30 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class GameService {
 
     private final GameRepository gameRepository;
+    private final RawgClient rawgClient;
 
-    public GameService(GameRepository gameRepository) {
-        this.gameRepository = gameRepository;
-    }
 
         public List<GameDTO> getAllGames(){
             return gameRepository.findAll().stream().map(this::mapToDTO).toList();
         }
-
     public void insertGame(GameDTO game) {
         if(gameRepository.existsByTitle(game.getTitle())){
             throw new DataIntegrityViolationException("a game already exists with title "+ game.getTitle());
         }
-        gameRepository.save( mapFromDTO(game));
+        RawgResponse response = rawgClient.searchGames(game.getTitle(),1,1);
+        RawgDTO rawgDTO = response.results().get(0);
+        Game gameEntity = mapFromDTO(game);
+        if(rawgDTO != null){
+            gameEntity.setEstimatedPlayTime(rawgDTO.playtime());
+            gameEntity.setImage(rawgDTO.background_image());
+            gameEntity.setRawgId(rawgDTO.id());
+        }
+
+        gameRepository.save( gameEntity);
     }
 
     public GameDTO getGameByTitle(String title) {
@@ -107,14 +118,40 @@ public class GameService {
     }
 
     private GameDTO mapToDTO(Game game){
+            if (game==null){
+                return null;
+            }
         return new GameDTO(game.getTitle(), game.getConsole(), game.getStatus(), game.getHoursPlayed(),
-                game.getOpinion(), game.getStartDate(), game.getDateOfCompletion());
+                game.getOpinion(), game.getStartDate(), game.getDateOfCompletion(), game.getEstimatedPlayTime(),
+                game.getImage(),game.getRawgId(), mapListToDTO(game.getAdditions()), mapToDTO(game.getParentGame()));
     }
 
     private Game mapFromDTO(GameDTO game){
-        return new Game(game.getTitle(), game.getConsole(), game.getStatus(), game.getHoursPlayed(), game.getOpinion(),
-                game.getStartDate(), game.getDateOfCompletion());
+        if (game==null){
+            return null;
+        }
+        return new Game(game.getTitle(),
+                game.getConsole(), game.getStatus(), game.getHoursPlayed(), game.getOpinion(),
+                game.getStartDate(), game.getDateOfCompletion(), game.getEstimatedPlayTime(),
+                game.getImage(), game.getRawgId(), mapListFromDTO(game.getAdditions()), mapFromDTO(game.getParentGame()));
     }
 
+    private List<GameDTO> mapListToDTO(List<Game> gameList){
+        List<GameDTO> gameDTOList = new ArrayList<>();
+            for(Game g : gameList){
+                GameDTO gDTO = mapToDTO(g);
+                gameDTOList.add(gDTO);
+            }
+            return gameDTOList;
+    }
+
+    private List<Game> mapListFromDTO(List<GameDTO> gameDTOList){
+        List<Game> gameList = new ArrayList<>();
+        for(GameDTO gDTO : gameDTOList){
+            Game g = mapFromDTO(gDTO);
+            gameList.add(g);
+        }
+        return gameList;
+    }
 
 }

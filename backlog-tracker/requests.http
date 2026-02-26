@@ -16,15 +16,20 @@ DELETE http://localhost:8080/api/v1/games/title/Assassin's Creed Odyssey
 POST http://localhost:8080/api/v1/games
 Content-Type: application/json
 
-    {
-      "title": "Prince of Persia: The Lost Crown",
-      "console": "PS5",
-      "status": "playing",
-      "hoursPlayed": 0,
-      "opinion": "",
-      "startDate": "2026-02-24",
-      "dateOfCompletion": ""
-    }
+{
+  "title": "Prince of Persia: The Lost Crown",
+  "console": "PS5",
+  "status": "playing",
+  "hoursPlayed": 2,
+  "opinion": "",
+  "startDate": "2026-02-18",
+  "dateOfCompletion": null,
+  "estimatedPlayTime": null,
+  "image": null,
+  "rawgId": null,
+  "additions": [],
+  "parentGame": null
+}
 ###
 POST http://localhost:8080/api/v1/games/multiple
 Content-Type: application/json

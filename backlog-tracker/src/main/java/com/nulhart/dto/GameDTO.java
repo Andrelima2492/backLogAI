@@ -3,10 +3,16 @@ package com.nulhart.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class GameDTO {
     @NotBlank
@@ -22,22 +28,12 @@ public class GameDTO {
     private String opinion;
     private LocalDate startDate;
     private LocalDate dateOfCompletion;
-
-    public GameDTO() {
-    }
-
-
-    public GameDTO(
-                String title, String console, String status, int hoursPlayed,
-                String opinion, LocalDate startDate, LocalDate dateOfCompletion) {
+    private Integer estimatedPlayTime;
+    private String image;
+    private Long rawgId;
+    private List<GameDTO> additions;
+    private GameDTO parentGame;
 
 
-        this.title = title;
-        this.console = console;
-        this.status = status;
-        this.hoursPlayed = hoursPlayed;
-        this.opinion = opinion;
-        this.startDate = startDate;
-        this.dateOfCompletion = dateOfCompletion;
-    }
+
 }

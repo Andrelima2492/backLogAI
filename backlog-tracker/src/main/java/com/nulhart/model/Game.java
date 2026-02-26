@@ -1,13 +1,19 @@
 package com.nulhart.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@NoArgsConstructor
 @Data
 @Entity
 public class Game {
@@ -21,43 +27,37 @@ public class Game {
     @Column(nullable = false)
     private String status;
     private int hoursPlayed;
-    private Integer estimatedPlayTime;
     private String opinion;
     private LocalDate startDate;
     private LocalDate dateOfCompletion;
+    private Integer estimatedPlayTime;
+    private Long rawgId;
+    private  String image;
     @OneToMany(mappedBy = "parentGame")
-    private List<Game> additions = new ArrayList<>();
+    private List<Game> additions;
     @ManyToOne
     @JoinColumn(name="parent_game_id")
     private Game parentGame;
 
-    public Game() {
-    }
 
+    public Game(@NotBlank @NotNull String title,
+                @NotBlank @NotNull String console,
+                @NotBlank @NotNull String status,
+                int hoursPlayed,
+                String opinion,
+                LocalDate startDate, LocalDate dateOfCompletion, Integer estimatedPlayTime, String image, Long rawgId, List<Game> games, Game game) {
+                this.title= title;
+                this.console=console;
+                this.status=status;
+                this.hoursPlayed = hoursPlayed;
+                this.opinion=opinion;
+                this.startDate = startDate;
+                this.dateOfCompletion=dateOfCompletion;
+                this.estimatedPlayTime=estimatedPlayTime;
+                this.image=image;
+                this.rawgId = rawgId;
+                this.additions = games;
+                this.parentGame=game;
 
-    public Game(
-                String title, String console, String status, int hoursPlayed,
-                String opinion,  LocalDate startDate, LocalDate dateOfCompletion) {
-
-        this.id = id;
-        this.title = title;
-        this.console = console;
-        this.status = status;
-        this.hoursPlayed = hoursPlayed;
-        this.opinion = opinion;
-        this.startDate = startDate;
-        this.dateOfCompletion = dateOfCompletion;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Game game = (Game) o;
-        return id == game.id && hoursPlayed == game.hoursPlayed && Objects.equals(title, game.title) && Objects.equals(console, game.console) && Objects.equals(status, game.status) && Objects.equals(opinion, game.opinion) && Objects.equals(startDate, game.startDate) && Objects.equals(dateOfCompletion, game.dateOfCompletion);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, console, status, hoursPlayed, opinion, startDate, dateOfCompletion);
     }
 }

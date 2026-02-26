@@ -1,17 +1,25 @@
 package com.nulhart.rawg;
-
-import jakarta.annotation.PostConstruct;
+import com.nulhart.dto.RawgResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class RawgClient {
 
     private final RawgProperties rawgProperties;
+    private final RestClient rawgRestClient;
 
-     @PostConstruct
-    public void test(){
-         System.out.println("RAWG KEY FROM VAULT " +rawgProperties.getApiKey());
-     }
+    public RawgResponse searchGames(String search, int page, int pageSize){
+        return rawgRestClient.get().uri(uriBuilder -> uriBuilder.path("/games")
+                .queryParam("key", rawgProperties.getApiKey())
+                .queryParam("search", search)
+                .queryParam("page", page)
+                .queryParam("page_size", pageSize)
+                .queryParam("search_precise", true)
+                .build()).retrieve().body(RawgResponse.class);
+
+    }
 }
+
