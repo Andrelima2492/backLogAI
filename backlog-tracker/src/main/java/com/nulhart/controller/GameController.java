@@ -43,6 +43,11 @@ public class GameController {
     public List<GameDTO> getGamesByStatus(@PathVariable String status){
         return gameService.getGamesByStatus(status);
     }
+
+  @GetMapping("/dlcs/{rawgId}")
+  public List<GameDTO>  getDLCs(@PathVariable Long rawgId){
+        return gameService.getDLCs(rawgId);
+  }
     @PostMapping
     public void addNewGame(@RequestBody GameDTO game){
             gameService.insertGame(game);

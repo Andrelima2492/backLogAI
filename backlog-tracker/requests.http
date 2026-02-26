@@ -11,24 +11,19 @@ DELETE http://localhost:8080/api/v1/games/title/
 ###
 DELETE http://localhost:8080/api/v1/games
 ###
-DELETE http://localhost:8080/api/v1/games/title/Assassin's Creed Odyssey
+DELETE http://localhost:8080/api/v1/games/title/One Piece Odyssey: Reunion of Memories
 ###
 POST http://localhost:8080/api/v1/games
 Content-Type: application/json
 
 {
-  "title": "Prince of Persia: The Lost Crown",
-  "console": "PS5",
+  "title": "City Hunter",
+  "console": "Switch",
   "status": "playing",
-  "hoursPlayed": 2,
+  "hoursPlayed": 1,
   "opinion": "",
-  "startDate": "2026-02-18",
-  "dateOfCompletion": null,
-  "estimatedPlayTime": null,
-  "image": null,
-  "rawgId": null,
-  "additions": [],
-  "parentGame": null
+  "startDate": "2026-02-24",
+  "dateOfCompletion": null
 }
 ###
 POST http://localhost:8080/api/v1/games/multiple

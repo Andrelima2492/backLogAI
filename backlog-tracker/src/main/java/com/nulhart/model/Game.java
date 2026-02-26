@@ -18,8 +18,7 @@ import java.util.Objects;
 @Entity
 public class Game {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long rawgId;
     @Column(nullable = false, unique = true)
     private String title;
     @Column(nullable = false)
@@ -31,9 +30,8 @@ public class Game {
     private LocalDate startDate;
     private LocalDate dateOfCompletion;
     private Integer estimatedPlayTime;
-    private Long rawgId;
     private  String image;
-    @OneToMany(mappedBy = "parentGame")
+    @OneToMany(mappedBy = "parentGame", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Game> additions;
     @ManyToOne
     @JoinColumn(name="parent_game_id")
@@ -45,7 +43,7 @@ public class Game {
                 @NotBlank @NotNull String status,
                 int hoursPlayed,
                 String opinion,
-                LocalDate startDate, LocalDate dateOfCompletion, Integer estimatedPlayTime, String image, Long rawgId, List<Game> games, Game game) {
+                LocalDate startDate, LocalDate dateOfCompletion, Integer estimatedPlayTime, String image) {
                 this.title= title;
                 this.console=console;
                 this.status=status;
@@ -55,9 +53,5 @@ public class Game {
                 this.dateOfCompletion=dateOfCompletion;
                 this.estimatedPlayTime=estimatedPlayTime;
                 this.image=image;
-                this.rawgId = rawgId;
-                this.additions = games;
-                this.parentGame=game;
-
     }
 }

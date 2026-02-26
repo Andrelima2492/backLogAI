@@ -17,9 +17,15 @@ public class RawgClient {
                 .queryParam("search", search)
                 .queryParam("page", page)
                 .queryParam("page_size", pageSize)
-                .queryParam("search_precise", true)
-                .build()).retrieve().body(RawgResponse.class);
+                .queryParam("search_precise", true).build()).retrieve().body(RawgResponse.class);
 
+    }
+
+    public RawgResponse getDLCs(String rawgKey, int page, int pageSize){
+        return rawgRestClient.get().uri(uriBuilder -> uriBuilder.path("/games/"+rawgKey+"/additions")
+                .queryParam("key", rawgProperties.getApiKey())
+                .queryParam("page",page)
+                .queryParam("page_size", pageSize).build()).retrieve().body(RawgResponse.class);
     }
 }
 
