@@ -107,7 +107,9 @@ public class GameService {
                 newGamesToAdd.add(g);
             }
         }
-        gameRepository.saveAll(newGamesToAdd.stream().map(this::mapFromDTO).toList());
+        for(GameDTO gdto :newGamesToAdd ){
+            this.insertGame(gdto);
+        }
     }
     @Transactional
     public void editGameById(GameDTO game, Long id)  {

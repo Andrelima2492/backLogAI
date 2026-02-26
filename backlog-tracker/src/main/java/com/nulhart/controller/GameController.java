@@ -24,8 +24,8 @@ public class GameController {
         return gameService.getAllGames();
     }
 
-    @GetMapping("/title/{title}")
-    public GameDTO getGameByTitle(@PathVariable String title)  {
+    @GetMapping("/title")
+    public GameDTO getGameByTitle(@RequestParam String title)  {
         return gameService.getGameByTitle(title);
     }
 
@@ -66,13 +66,13 @@ public class GameController {
         gameService.deleteAllGames();
     }
 
-    @DeleteMapping("/title/{title}")
-    public void deleteGameByTitle(@PathVariable String title){
+    @DeleteMapping("/title")
+    public void deleteGameByTitle(@RequestParam String title){
         gameService.deleteGameByTitle(title);
     }
 
-@PutMapping("/title/{title}")
-public void editGameByTitle(@RequestBody GameDTO game, @PathVariable String title){
+@PutMapping("/title")
+public void editGameByTitle(@RequestBody GameDTO game, @RequestParam String title){
         gameService.editGameByTitle(game, title);
 }
 
