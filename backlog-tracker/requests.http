@@ -11,8 +11,6 @@ DELETE http://localhost:8080/api/v1/games/title?title=Phoenix Wright: Ace Attorn
 ###
 DELETE http://localhost:8080/api/v1/games
 ###
-DELETE http://localhost:8080/api/v1/games/title/One Piece Odyssey: Reunion of Memories
-###
 POST http://localhost:8080/api/v1/games
 Content-Type: application/json
 
@@ -44,7 +42,7 @@ Content-Type: application/json
     "console": "PS5",
     "status": "completed",
     "hoursPlayed": 6,
-    "opinion": "Wasn't ready for some beattles, story was not engaging and all the made the game different from a turn based rpg wasnt there. not worth the full dlc price",
+    "opinion": "Wasn't ready for some battles, story was not engaging and all the made the game different from a turn based rpg wasnt there. not worth the full dlc price",
     "startDate": "2026-02-18",
     "dateOfCompletion": "2026-02-23"
   },
@@ -78,14 +76,14 @@ Content-Type: application/json
 ]
 
 ###
-PUT http://localhost:8080/api/v1/games/title?title=Assassin’s Creed Odyssey - The Fate of Atlantis
+PUT http://localhost:8080/api/v1/games/title?title=Assassin’s Creed Odyssey – Legacy of the First Blade
 Content-Type: application/json
 
 {
-    "title": "Assassin’s Creed Odyssey - The Fate of Atlantis",
+    "title": "Assassin’s Creed Odyssey - Legacy of The First Blade",
     "console": "PS4",
     "status": "completed",
-    "hoursPlayed": 15,
+    "hoursPlayed": 8,
     "opinion": "Good Game, love the eagle bearer, a bit too long",
     "startDate": "2025-11-27",
     "dateOfCompletion": "2026-02-16"

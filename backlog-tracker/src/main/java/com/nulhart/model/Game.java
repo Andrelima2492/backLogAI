@@ -16,7 +16,7 @@ import java.util.Objects;
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private Long UUID;
+    private String UUID;
     private Long rawgId;
     @Column(nullable = false, unique = true)
     private String title;
