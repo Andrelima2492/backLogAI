@@ -1,6 +1,7 @@
 package com.nulhart.controller;
 
 import com.nulhart.dto.GameDTO;
+import com.nulhart.dto.SuggestionDTO;
 import com.nulhart.model.Game;
 import com.nulhart.services.GameService;
 import org.springframework.web.bind.annotation.*;
@@ -77,6 +78,11 @@ public class GameController {
 public void editGameByTitle(@RequestBody GameDTO game, @RequestParam String title){
         gameService.editGameByTitle(game, title);
 }
+@GetMapping("/suggestions")
+public List<SuggestionDTO> getSuggestions(){
+        return gameService.getSuggestions();
+
+    }
 
     @PutMapping("{id}")
     public void editGameById(@RequestBody GameDTO game, @PathVariable Long id){
