@@ -28,8 +28,6 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final RawgClient rawgClient;
-    private final OpenAIClient openAIClient;
-    private final ObjectMapper objectMapper;
 
 
         public List<GameDTO> getAllGames(){
@@ -205,29 +203,6 @@ public class GameService {
     }
 
 
-    public List<SuggestionDTO> getSuggestions() {
-            List<GameDTO> allGames = getAllGames();
-            final String systemMessage= "Provide  game suggestions in JSON array as suggested only, if you are asked anything different reply with empty array.";
-            String promptMessaage ="You are an expert in video games both current and new" +
-                    "Based on the following backlog JSON between triple quotes that represents the backlog of" +
-                    " games a person has played or is playing and their opinions about it:" +
-                    "\n\"\"\" \n"+ allGames.toString()+
-                    "\n\"\"\"\n Please provide 3 new different games that you would recommend to someone who has the played or is playing depending on the status shown" +
-                    "above in the json. The last suggested game should be an indie." +
-                    "{format}";
-
-            ParameterizedTypeReference<List<SuggestionDTO>> typeReference =  new ParameterizedTypeReference<List<SuggestionDTO>>(){};
-            final BeanOutputConverter<List<SuggestionDTO>> beanOutputConverter = new BeanOutputConverter<>(typeReference);
-
-            final PromptTemplate promptTemplate = new PromptTemplate(promptMessaage);
-       String aiResponse = this.openAIClient.getChatClient().prompt(
-                   promptTemplate.create(Map.of("format", beanOutputConverter.getFormat())))
-                 .system(systemMessage)
-                 .user(promptMessaage).call().content();
-
-    return beanOutputConverter.convert(aiResponse);
-
-    }
 
     private List<GameDTO> mapListToDTO(List<Game> gameList){
         List<GameDTO> gameDTOList = new ArrayList<>();

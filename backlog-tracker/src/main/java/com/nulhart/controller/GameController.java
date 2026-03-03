@@ -4,19 +4,20 @@ import com.nulhart.dto.GameDTO;
 import com.nulhart.dto.SuggestionDTO;
 import com.nulhart.model.Game;
 import com.nulhart.services.GameService;
+import com.nulhart.services.OpenAIService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("api/v1/games")
 public class GameController {
     private final GameService gameService;
+    private final OpenAIService openAIService;
 
-    public GameController(GameService gameService) {
-        this.gameService = gameService;
-    }
 
     @GetMapping
     public List<GameDTO> getGames(){
@@ -80,7 +81,7 @@ public void editGameByTitle(@RequestBody GameDTO game, @RequestParam String titl
 }
 @GetMapping("/suggestions")
 public List<SuggestionDTO> getSuggestions(){
-        return gameService.getSuggestions();
+        return openAIService.getSuggestions();
 
     }
 
