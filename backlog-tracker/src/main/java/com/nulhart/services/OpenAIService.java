@@ -1,7 +1,7 @@
 package com.nulhart.services;
 
-import com.nulhart.dto.GameDTO;
-import com.nulhart.dto.SuggestionDTO;
+import com.nulhart.dto.game.GameDTO;
+import com.nulhart.dto.game.SuggestionDTO;
 import com.nulhart.openai.OpenAIClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.prompt.Prompt;

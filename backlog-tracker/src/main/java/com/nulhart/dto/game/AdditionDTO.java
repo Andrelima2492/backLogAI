@@ -1,4 +1,4 @@
-package com.nulhart.dto;
+package com.nulhart.dto.game;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

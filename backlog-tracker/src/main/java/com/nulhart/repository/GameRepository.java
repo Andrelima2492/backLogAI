@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface GameRepository extends JpaRepository<Game,Long> {
+public interface GameRepository extends JpaRepository<Game,String> {
 
     Optional<Object> findGameByTitleIs(String title);
 
@@ -14,7 +14,10 @@ public interface GameRepository extends JpaRepository<Game,Long> {
 
     List<Game> findGameByStatus(String status);
 
+    List<Game> findTop5ByDateOfCompletionNotNullOrderByDateOfCompletionDesc();
     void deleteGameByTitle(String title);
 
     boolean existsByTitle(String title);
+
+    Optional<Game> findGameByRawgId(Long rawgId);
 }

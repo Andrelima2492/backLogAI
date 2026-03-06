@@ -1,4 +1,4 @@
-package com.nulhart.exceptions;
+package com.nulhart.exceptions.game;
 
 public class GameNotFoundException extends RuntimeException{
 

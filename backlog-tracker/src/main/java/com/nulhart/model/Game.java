@@ -37,7 +37,7 @@ public class Game {
     private Game parentGame;
 
 
-    public Game(@NotBlank @NotNull String title,
+    public Game( @NotBlank @NotNull String title,
                 @NotBlank @NotNull String console,
                 @NotBlank @NotNull String status,
                 int hoursPlayed,

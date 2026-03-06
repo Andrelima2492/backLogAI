@@ -1,4 +1,4 @@
-package com.nulhart.dto;
+package com.nulhart.dto.game;
 
 public record SuggestionDTO(String title, String console) {
 }

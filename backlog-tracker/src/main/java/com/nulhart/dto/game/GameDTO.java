@@ -1,4 +1,4 @@
-package com.nulhart.dto;
+package com.nulhart.dto.game;
 
 
 import jakarta.validation.constraints.NotBlank;
@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class GameDTO {
+    String uuid;
     @NotBlank
     @NotNull
     private String title;

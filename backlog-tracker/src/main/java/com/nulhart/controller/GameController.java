@@ -1,8 +1,7 @@
 package com.nulhart.controller;
 
-import com.nulhart.dto.GameDTO;
-import com.nulhart.dto.SuggestionDTO;
-import com.nulhart.model.Game;
+import com.nulhart.dto.game.GameDTO;
+import com.nulhart.dto.game.SuggestionDTO;
 import com.nulhart.services.GameService;
 import com.nulhart.services.OpenAIService;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +26,17 @@ public class GameController {
         return gameService.getAllGames();
     }
 
+    @GetMapping("/rawgId/{id}")
+    public GameDTO getGameByRawgId(@PathVariable Long rawgId){
+        return gameService.getGameByRawgId(rawgId);
+    }
     @GetMapping("/title")
     public GameDTO getGameByTitle(@RequestParam String title)  {
         return gameService.getGameByTitle(title);
     }
 
     @GetMapping("{id}")
-    public GameDTO getGameById(@PathVariable Long id) {
+    public GameDTO getGameById(@PathVariable String id) {
         return gameService.getGameById(id);
     }
 
@@ -62,7 +65,7 @@ public class GameController {
     }
 
     @DeleteMapping("{id}")
-    public void deleteGameById(@PathVariable Long id){
+    public void deleteGameById(@PathVariable String id){
         gameService.deleteGameById(id);
     }
     @DeleteMapping
@@ -84,9 +87,12 @@ public List<SuggestionDTO> getSuggestions(){
         return openAIService.getSuggestions();
 
     }
-
+    @GetMapping("/last5Finished")
+    public List<GameDTO> getLastCompleted(){
+        return gameService.getLastFiveCompleted();
+    }
     @PutMapping("{id}")
-    public void editGameById(@RequestBody GameDTO game, @PathVariable Long id){
+    public void editGameById(@RequestBody GameDTO game, @PathVariable String id){
         gameService.editGameById(game, id);
     }
 }

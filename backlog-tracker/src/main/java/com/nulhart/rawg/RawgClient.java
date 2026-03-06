@@ -1,5 +1,5 @@
 package com.nulhart.rawg;
-import com.nulhart.dto.RawgResponse;
+import com.nulhart.dto.game.RawgResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;

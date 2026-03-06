@@ -1,4 +1,4 @@
-package com.nulhart.dto;
+package com.nulhart.dto.game;
 
 import java.util.List;
 

@@ -1,25 +1,17 @@
 package com.nulhart.services;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nulhart.dto.*;
-import com.nulhart.exceptions.GameNotFoundException;
+import com.nulhart.dto.game.*;
+import com.nulhart.exceptions.game.GameNotFoundException;
 import com.nulhart.model.Game;
-import com.nulhart.openai.OpenAIClient;
 import com.nulhart.rawg.RawgClient;
 import com.nulhart.repository.GameRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.converter.BeanOutputConverter;
-import org.springframework.ai.template.st.StTemplateRenderer;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -71,7 +63,7 @@ public class GameService {
         return mapToDTO(game.get());
     }
 
-    public GameDTO getGameById(Long id) {
+    public GameDTO getGameById(String id) {
         Optional<Game> game = Optional.of(gameRepository.findById(id).orElseThrow(()->
                 new  GameNotFoundException("Game with title "+ id +" was not found")));
         return mapToDTO(game.get());
@@ -86,7 +78,7 @@ public class GameService {
     }
 
     @Transactional
-    public void deleteGameById(Long id) {
+    public void deleteGameById(String id) {
         if(!gameRepository.existsById(id)){
             throw  new GameNotFoundException("No Game was found with id "+id);
         }
@@ -117,7 +109,7 @@ public class GameService {
         }
     }
     @Transactional
-    public void editGameById(GameDTO game, Long id)  {
+    public void editGameById(GameDTO game, String id)  {
         Optional<Game> entity = Optional.of(gameRepository.findById(id).orElseThrow(()->
                 new GameNotFoundException("No game exists with id "+id)));
         Game gameEntity = entity.get();
@@ -147,7 +139,7 @@ public class GameService {
             List<GameDTO> dlcs = new ArrayList<>();
             RawgResponse dlcResponse = rawgClient.getDLCs(rawgId.toString(),1,5);
             for(RawgDTO rawg:dlcResponse.results()){
-              GameDTO dlcDTO = getGameById(rawg.id());
+              GameDTO dlcDTO = getGameByRawgId(rawg.id());
               dlcs.add(dlcDTO);
             }
             return dlcs;
@@ -160,7 +152,7 @@ public class GameService {
             if(game.getParentGame()!= null){
                 titleParent=game.getParentGame().getTitle();
             }
-        return new GameDTO(game.getTitle(), game.getConsole(), game.getStatus(), game.getHoursPlayed(),
+        return new GameDTO(game.getUUID(),game.getTitle(), game.getConsole(), game.getStatus(), game.getHoursPlayed(),
                 game.getOpinion(), game.getStartDate(), game.getDateOfCompletion(), game.getEstimatedPlayTime(),
                 game.getImage(),titleParent, mapAdditionListToDTO(game.getAdditions()));
     }
@@ -223,7 +215,7 @@ public class GameService {
     }
 
     private GameDTO createGameDTOFromSuggestionDTO(SuggestionDTO suggestionDTO){
-            return new GameDTO(suggestionDTO.title(),suggestionDTO.console(),"not purchased", 0, "", null, null,
+            return new GameDTO(null,suggestionDTO.title(),suggestionDTO.console(),"not purchased", 0, "", null, null,
                     null,"", "", null);
     }
 
@@ -236,4 +228,16 @@ public class GameService {
     }
 
 
+    public List<GameDTO> getLastFiveCompleted() {
+            List<Game> lastCompletedEntities = gameRepository.findTop5ByDateOfCompletionNotNullOrderByDateOfCompletionDesc();
+         return this.mapListToDTO(lastCompletedEntities);
+    }
+
+    public GameDTO getGameByRawgId(Long id) {
+          Optional<Game> gameEntity =  Optional.of((Game) gameRepository.findGameByRawgId(id).orElseThrow(
+                  ()-> new GameNotFoundException("No Game found with rawgid "+id)));
+          return mapToDTO(gameEntity.get());
+
+
+    }
 }
