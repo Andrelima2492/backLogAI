@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 public class AnimeDTO{
@@ -16,8 +18,7 @@ public class AnimeDTO{
     private Integer episodesWatched;
     private Integer score;
     private String image;
-    private List<RelatedDTO> sequels;
-    private List<RelatedDTO> spinOffs;
+    private Set<RelatedDTO> sequels;
     private RelatedDTO parent;
     private Integer malId ;
     private LocalDate startDate;

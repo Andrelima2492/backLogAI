@@ -11,8 +11,4 @@ import org.springframework.stereotype.Component;
 public class OpenAIProperties {
     private String apiKey;
 
-    @PostConstruct
-    public void test(){
-        System.out.println("Openai secret is "+apiKey);
-    }
 }

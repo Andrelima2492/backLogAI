@@ -2,11 +2,17 @@ package com.nulhart.controller;
 
 import com.nulhart.dto.anime.AnimeDTO;
 import com.nulhart.services.AnimeService;
+import com.nulhart.util.PKCEUtil;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/anime")
@@ -34,14 +40,14 @@ public class AnimeController {
         return  animeService.getAnimeByStatus(status);
     }
 
-    @GetMapping("/sequels/{uuid}")
-    public List<AnimeDTO> getSequels(@PathVariable String uuid){
-        return animeService.getSequels(uuid);
+    @GetMapping("/MAL/id/{id}")
+    public AnimeDTO getAnimeByMALId(@PathVariable Integer id){
+        return animeService.getAnimeByMalId(id);
     }
 
-    @GetMapping("/spinoffs/{uuid}")
-    public List<AnimeDTO>getSpinOffs(@PathVariable String uuid) {
-        return animeService.getSpinOffs(uuid);
+    @GetMapping("/sequels/{uuid}")
+    public Set<AnimeDTO> getSequels(@PathVariable String uuid){
+        return animeService.getSequels(uuid);
     }
 
     @GetMapping("/prequel/{uuid}")
@@ -64,18 +70,19 @@ public class AnimeController {
         animeService.editAnimeByUuid(anime, uuid);
     }
 
-    @PostMapping
-    public void insertAnime(@RequestBody AnimeDTO anime){
-        animeService.insertAnime(anime);
-    }
+
 
     @PostMapping("/MAL/{username}")
-    public void importMalByUser(@PathVariable String username){
+    public ResponseEntity<String> importMalByUser(@PathVariable String username, HttpSession session){
+        System.out.println("Controller Thread "+ Thread.currentThread().getName());
         animeService.importMalByUser(username);
+        return  ResponseEntity.ok("Request started");
     }
-    @PostMapping("/multiple")
-    public void insertMultipleAnime(@RequestBody List<AnimeDTO> animeDTOList){
-        animeService.insertMultipleAnime(animeDTOList);
+
+
+    @GetMapping("/auth/mal/login")
+    public void login(HttpServletResponse response, HttpSession session) throws IOException {
+        animeService.login(response, session);
     }
 
 }

@@ -4,19 +4,22 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded=true)
 @RequiredArgsConstructor
 public class Anime {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String UUID;
+    private String id;
     @NotNull
     @NotBlank
     @Column(unique=true)
@@ -32,12 +35,13 @@ public class Anime {
     Integer score;
     String image;
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Anime> sequel;
-    @OneToMany(mappedBy = "parent",cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Anime> spinOff;
+    @ToString.Exclude
+    Set<Anime> sequel= new HashSet<>();
     @ManyToOne
     @JoinColumn(name = "parent_anime_id")
+    @ToString.Exclude
     Anime parent;
+    @EqualsAndHashCode.Include
     Integer malId;
     LocalDate startDate;
     LocalDate endDate;
@@ -48,5 +52,6 @@ public class Anime {
         this.episodesWatched=episodesWatched;
         this.score=score;
     }
+
 
 }

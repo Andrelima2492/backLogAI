@@ -8,7 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,7 +33,7 @@ public class GameDTO {
     private Integer estimatedPlayTime;
     private String image;
     private String parentGameName;
-    private List<AdditionDTO> additions;
+    private Set<AdditionDTO> additions = new HashSet<>();
 
 
 }

@@ -6,9 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @NoArgsConstructor
 @Data
@@ -31,7 +29,7 @@ public class Game {
     private Integer estimatedPlayTime;
     private  String image;
     @OneToMany(mappedBy = "parentGame", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Game> additions;
+    private Set<Game> additions = new HashSet<>();
     @ManyToOne
     @JoinColumn(name="parent_game_id")
     private Game parentGame;

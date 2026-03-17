@@ -10,9 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +31,7 @@ public class GameService {
         RawgResponse response = rawgClient.searchGames(game.getTitle(),1,1);
         RawgDTO rawgDTO = response.results().get(0);
         Game gameEntity = mapFromDTO(game);
-        List<Game> additions = new ArrayList<>();
+        Set<Game> additions = new HashSet<>();
         gameEntity.setAdditions(additions);
         if(rawgDTO != null){
             gameEntity.setEstimatedPlayTime(rawgDTO.playtime());
@@ -174,8 +172,8 @@ public class GameService {
                     addition.getImage());
     }
 
-    private List<AdditionDTO> mapAdditionListToDTO(List<Game> additions){
-        List<AdditionDTO> additionDTOS = new ArrayList<>();
+    private Set<AdditionDTO> mapAdditionListToDTO(Set<Game> additions){
+        Set<AdditionDTO> additionDTOS = new HashSet<>();
         for(Game g : additions){
             AdditionDTO dto = mapAdditionToDTO(g);
             additionDTOS.add(dto);

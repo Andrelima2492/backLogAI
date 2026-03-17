@@ -9,5 +9,5 @@ import org.springframework.stereotype.Component;
 @Data
 public class MALProperties {
     private String apiKey;
-
+    private String secret;
 }
