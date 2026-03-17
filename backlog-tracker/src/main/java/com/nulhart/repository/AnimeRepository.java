@@ -13,7 +13,7 @@ public interface AnimeRepository extends JpaRepository<Anime, String> {
 
     boolean existsByMalId(Integer malId);
 
-    Anime getAnimeByMalId(Integer malId);
+    Optional<Anime> getAnimeByMalId(Integer malId);
 
     boolean existsAnimeByTitle(String title);
 }
