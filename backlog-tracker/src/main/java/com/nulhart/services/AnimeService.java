@@ -70,19 +70,14 @@ public class AnimeService {
                    sequel.getStatus(), sequel.getNumberOfEpisodes(),sequel.getEpisodesWatched());
            sequelResults.add(sequelDTO);
         }
-        for(Anime spinOff : anime.getSpinOff()){
-           RelatedDTO spinOffDTO = new RelatedDTO(spinOff.getTitle(), spinOff.getStatus(),
-                   spinOff.getNumberOfEpisodes(),
-                   spinOff.getEpisodesWatched());
-           spinOffResults.add(spinOffDTO);
-        }
+
         if(anime.getParent() != null) {
             parentAnime = new RelatedDTO(anime.getParent().getTitle(),anime.getParent().getStatus(),
                     anime.getParent().getNumberOfEpisodes(), anime.getParent().getEpisodesWatched());
         }
        return new AnimeDTO(anime.getId(),anime.getTitle(), anime.getStatus(),anime.getNumberOfEpisodes(),
                 anime.getEpisodesWatched(), anime.getScore(),anime.getImage(),
-                sequelResults, spinOffResults,parentAnime, anime.getMalId(), anime.getStartDate(), anime.getEndDate());
+                sequelResults,parentAnime, anime.getMalId(), anime.getStartDate(), anime.getEndDate());
 
     }
 
@@ -96,11 +91,6 @@ public class AnimeService {
        return  extractAllFomRelatedList(animeDTO.getSequels());
     }
 
-    public Set<AnimeDTO> getSpinOffs(String uuid) {
-        Set<AnimeDTO> results = new HashSet<>();
-        AnimeDTO animeDTO = getAnimeByUuid(uuid);
-        return extractAllFomRelatedList(animeDTO.getSpinOffs());
-    }
 
     private Set<AnimeDTO> extractAllFomRelatedList(Set<RelatedDTO> list){
         Set<AnimeDTO> results = new HashSet<>();
@@ -147,7 +137,8 @@ public class AnimeService {
                 if(!animeRepository.existsByMalId(related.node().id())){
                     MALDetailsNode relatedDetails = getDetailsSafe(related.node().id(),
                             "start_date,end_date,num_episodes");
-                    if("sequel".equals(related.relation_type())){
+                    if("sequel".equals(related.relation_type())
+                    ||"side_story".equals(related.relation_type())||"spin_off".equals(related.relation_type())){
                         Anime sequel = new Anime(related.node().title(),"plan_to_watch",null,null);
                         sequel.setParent(animeEntity);
                         sequel.setNumberOfEpisodes(relatedDetails.num_episodes());
@@ -189,27 +180,6 @@ public class AnimeService {
 
                         animeEntity.setParent(prequel);
                         animeRepository.save(prequel);
-                    } else if ("spin-off".equals(related.relation_type()) || ("side_story".equals(related.relation_type()))){
-                        Anime spinoff = new Anime(related.node().title(),
-                                "plan_to_watch", null ,null);
-                        spinoff.setParent(animeEntity);
-                        spinoff.setMalId(related.node().id());
-                        spinoff.setImage(related.node().main_picture().medium());
-                        spinoff.setNumberOfEpisodes(relatedDetails.num_episodes());
-                        if(relatedDetails.start_date()!= null && relatedDetails.start_date().matches(regex)){
-                            LocalDate startDate = LocalDate.parse(relatedDetails.start_date());
-                            spinoff.setStartDate(startDate);
-                        }else{
-                            spinoff.setStartDate(null);
-                        }
-                        if(relatedDetails.end_date()!= null && relatedDetails.end_date().matches(regex)){
-                            LocalDate endDate = LocalDate.parse(relatedDetails.end_date());
-                            spinoff.setEndDate(endDate);
-                        }else{
-                            spinoff.setEndDate(null);
-                        }
-                        animeEntity.getSpinOff().add(spinoff);
-                        animeRepository.save(spinoff);
                     }
                 }
             }
@@ -281,13 +251,15 @@ public class AnimeService {
                             !"plan_to_watch".equals(userListDTO.list_status().status())) {
                         for (RelatedMALDTO relatedMALDTO : detailsNode.related_anime()) {
                             if ("sequel".equals(relatedMALDTO.relation_type()) ||
-                                    "prequel".equals(relatedMALDTO.relation_type()) || "spin-off".equals(relatedMALDTO.relation_type())
+                                    "prequel".equals(relatedMALDTO.relation_type()) || "spin_off".equals(relatedMALDTO.relation_type())
                                     || "side_story".equals(relatedMALDTO.relation_type())) {
                                 System.out.println(" related " + relatedMALDTO.node().title());
                                 MALDetailsNode relatedDetails = getDetailsSafe(relatedMALDTO.node().id(),
                                         "end_date,start_date,num_episodes");
                                 throttle();
-                                if ("sequel".equals(relatedMALDTO.relation_type())) {
+                                if ("sequel".equals(relatedMALDTO.relation_type())
+                                ||"spin_off".equals(relatedMALDTO.relation_type())||
+                                        "side_story".equals(relatedMALDTO.relation_type())) {
                                     if (animeRepository.existsByMalId(relatedMALDTO.node().id())) {
                                         Anime sequel = animeRepository.getAnimeByMalId(relatedMALDTO.node().id()).orElseThrow(
                                                 ()->new AnimeNotFoundException("No anime found with id "+
@@ -349,37 +321,6 @@ public class AnimeService {
                                         }
                                         prequel.setMalId(relatedMALDTO.node().id());
                                         animeRepository.save(prequel);
-                                    }
-                                } else if ("spin-off".equals(relatedMALDTO.relation_type()) ||
-                                        "side_story".equals(relatedMALDTO.relation_type())) {
-                                    if (animeRepository.existsByMalId(relatedMALDTO.node().id())) {
-                                        Anime spinoff = animeRepository.getAnimeByMalId(relatedMALDTO.node().id()).orElseThrow(
-                                                ()->new AnimeNotFoundException("No anime found with id "+relatedMALDTO.node().id())
-                                        );
-                                        spinoff.setParent(anime);
-                                        anime.getSpinOff().add(spinoff);
-                                        animeRepository.save(spinoff);
-                                    } else {
-                                        Anime spinoff = new Anime(relatedMALDTO.node().title(),
-                                                "plan_to_watch", null, null);
-                                        spinoff.setImage(relatedMALDTO.node().main_picture().medium());
-                                        spinoff.setNumberOfEpisodes(relatedDetails.num_episodes());
-                                        if (relatedDetails.start_date() != null && relatedDetails.start_date().matches(regex)) {
-                                            LocalDate startDate = LocalDate.parse(relatedDetails.start_date());
-                                            spinoff.setStartDate(startDate);
-                                        } else {
-                                            spinoff.setStartDate(null);
-                                        }
-                                        if (relatedDetails.end_date() != null && relatedDetails.end_date().matches(regex)) {
-                                            LocalDate endDate = LocalDate.parse(relatedDetails.end_date());
-                                            spinoff.setEndDate(endDate);
-                                        } else {
-                                            spinoff.setEndDate(null);
-                                        }
-                                        spinoff.setMalId(relatedMALDTO.node().id());
-                                        spinoff.setParent(anime);
-                                        anime.getSpinOff().add(spinoff);
-                                        animeRepository.save(spinoff);
                                     }
                                 }
                             }
