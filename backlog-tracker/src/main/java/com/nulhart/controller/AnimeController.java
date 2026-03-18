@@ -66,7 +66,7 @@ public class AnimeController {
     }
 
     @PutMapping("/{uuid}")
-    public void editAnimeByUuid( @RequestBody AnimeDTO anime,String uuid){
+    public void editAnimeByUuid( @RequestBody AnimeDTO anime,@PathVariable String uuid){
         animeService.editAnimeByUuid(anime, uuid);
     }
 
