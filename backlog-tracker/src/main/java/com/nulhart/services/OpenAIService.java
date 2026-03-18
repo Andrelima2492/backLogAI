@@ -9,6 +9,7 @@ import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -20,10 +21,12 @@ public class OpenAIService {
     private final GameService gameService;
     public List<SuggestionDTO> getSuggestions() {
         List<GameDTO> allGames =gameService.getAllGames();
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonGames = mapper.writeValueAsString(allGames);
         String promptMessaage ="You are an expert in video games both current and new" +
                 "Based on the following backlog JSON between triple quotes that represents the backlog of" +
                 " games a person has played or is playing and their opinions about it:" +
-                "\n\"\"\" \n"+ allGames.toString()+
+                "\n\"\"\" \n"+ jsonGames+
                 "\n\"\"\"\n Please provide 3 new different games that you would recommend to someone who has the played or is playing depending on the status shown" +
                 "above in the json. The last suggested game should be an indie." +
                 "{format}";
