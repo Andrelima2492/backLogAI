@@ -184,6 +184,7 @@ public class AnimeService {
                     }
                 }
             }
+            anime.setTags(openAIService.getTags(animeEntity));
         }
         }
 
@@ -250,6 +251,7 @@ public class AnimeService {
                     if(anime.getStatus().equals("watching") && anime.getTags() != null
                     && !anime.getTags().isEmpty()){
                         Set<String> tags = openAIService.getTags(anime);
+                        anime.setTags(tags);
                     }
                     animeRepository.save(anime);
                     if (!"dropped".equals(userListDTO.list_status().status()) &&
