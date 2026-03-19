@@ -1,1 +1,16 @@
 GET http://localhost:8080/api/v1/games/suggestions
+
+###
+POST http://localhost:8080/api/v1/anime/MAL/AndreLima92
+###
+GET http://localhost:8080/api/v1/anime/auth/mal/login
+
+###
+GET http://localhost:8080/api/v1/anime
+
+###
+DELETE http://localhost:8080/api/v1/anime
+
+###
+GET http://localhost:8080/api/v1/anime/MAL/id/918
+
