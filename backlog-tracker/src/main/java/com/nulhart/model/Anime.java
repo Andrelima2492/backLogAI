@@ -45,6 +45,8 @@ public class Anime {
     Integer malId;
     LocalDate startDate;
     LocalDate endDate;
+    @ElementCollection
+    Set<String> tags = new HashSet<>();
 
     public Anime(String title, String status,Integer episodesWatched, Integer score){
         this.title=title;

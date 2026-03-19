@@ -2,10 +2,9 @@ package com.nulhart.dto.anime;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -23,5 +22,6 @@ public class AnimeDTO{
     private Integer malId ;
     private LocalDate startDate;
     private LocalDate endDate;
+    private Set<String> tags = new HashSet<>();
 
 }

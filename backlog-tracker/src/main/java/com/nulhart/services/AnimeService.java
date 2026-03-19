@@ -32,6 +32,7 @@ public class AnimeService {
     private AnimeRepository animeRepository;
     private MALClient malClient;
     private MALTokenRepository malTokenRepository;
+    private OpenAIService openAIService;
     private final String regex = "^\\d{4}-\\d{2}-\\d{2}$";
 
     public List<AnimeDTO> getAllAnime() {
@@ -77,7 +78,7 @@ public class AnimeService {
         }
        return new AnimeDTO(anime.getId(),anime.getTitle(), anime.getStatus(),anime.getNumberOfEpisodes(),
                 anime.getEpisodesWatched(), anime.getScore(),anime.getImage(),
-                sequelResults,parentAnime, anime.getMalId(), anime.getStartDate(), anime.getEndDate());
+                sequelResults,parentAnime, anime.getMalId(), anime.getStartDate(), anime.getEndDate(), new HashSet<String>());
 
     }
 
@@ -245,6 +246,10 @@ public class AnimeService {
                             anime.setEndDate(null);
                         }
                         anime.setMalId(userListDTO.node().id());
+                    }
+                    if(anime.getStatus().equals("watching") && anime.getTags() != null
+                    && !anime.getTags().isEmpty()){
+                        Set<String> tags = openAIService.getTags(anime);
                     }
                     animeRepository.save(anime);
                     if (!"dropped".equals(userListDTO.list_status().status()) &&

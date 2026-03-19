@@ -1,7 +1,9 @@
 package com.nulhart.services;
 
+import com.nulhart.dto.anime.AnimeTagsDTO;
 import com.nulhart.dto.game.GameDTO;
 import com.nulhart.dto.game.SuggestionDTO;
+import com.nulhart.model.Anime;
 import com.nulhart.openai.OpenAIClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -13,6 +15,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +44,33 @@ public class OpenAIService {
                 .user(promptMessaage).call().content();
 
         return beanOutputConverter.convert(aiResponse);
+
+    }
+
+    public Set<String> getTags(Anime anime){
+        String promptMessage = """
+                        You are an expert in anime.
+                        Based on the following anime, generate 3 to 6 descriptive tags.
+                
+                        Anime:
+                        Title: %s
+                        Episodes: %s
+                
+                        Return ONLY a JSON object like:
+                        {
+                          "tags": ["tag1", "tag2", "tag3"]
+                        }
+                
+                        {format}
+                """.formatted(anime.getTitle(), anime.getNumberOfEpisodes());
+            ParameterizedTypeReference<AnimeTagsDTO> typeRef = new ParameterizedTypeReference<AnimeTagsDTO>() {
+            };
+            BeanOutputConverter<AnimeTagsDTO> converter = new BeanOutputConverter<>(typeRef);
+            PromptTemplate promptTemplate = new PromptTemplate(promptMessage);
+            Prompt prompt = promptTemplate.create(Map.of("format", converter.getFormat()));
+            String response = openAIClient.getChatClient().prompt(prompt).call().content();
+            AnimeTagsDTO dto = converter.convert(response);
+            return dto.tags();
 
     }
 }
