@@ -21,6 +21,6 @@ public class MangaDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer malId;
-    private Set<RelatedDTO> sequels;
-    private RelatedDTO parent;
+    private Set<RelatedMangaDTO> sequels;
+    private RelatedMangaDTO parent;
 }
