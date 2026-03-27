@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -21,6 +22,6 @@ public class MangaDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer malId;
-    private Set<RelatedMangaDTO> sequels;
+    private Set<RelatedMangaDTO> sequels = new HashSet<>();
     private RelatedMangaDTO parent;
 }
