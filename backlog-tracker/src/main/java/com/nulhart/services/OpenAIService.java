@@ -48,22 +48,17 @@ public class OpenAIService {
     }
 
     public Set<String> getTags(Anime anime){
-        String promptMessage = """
-                        You are an expert in anime.
-                        Based on the following anime, generate 3 to 6 descriptive tags.
-                
-                        Anime:
-                        Title: %s
-                        Episodes: %s
-                
-                        Return ONLY a JSON object like:
-                        {
-                          "tags": ["tag1", "tag2", "tag3"]
-                        }
-                
-                        {format}
-                """.formatted(anime.getTitle(), anime.getNumberOfEpisodes());
-            ParameterizedTypeReference<AnimeTagsDTO> typeRef = new ParameterizedTypeReference<AnimeTagsDTO>() {
+         String promptMessage = """
+                            You are an expert in anime.
+                            Based on the following anime, generate 3 to 6 descriptive tags.
+                        
+                            Anime:
+                            Title: %s
+                            Episodes: %s
+                        
+                            {format}
+                            """.formatted(anime.getTitle(), anime.getNumberOfEpisodes());
+            ParameterizedTypeReference<AnimeTagsDTO> typeRef = new ParameterizedTypeReference<>() {
             };
             BeanOutputConverter<AnimeTagsDTO> converter = new BeanOutputConverter<>(typeRef);
             PromptTemplate promptTemplate = new PromptTemplate(promptMessage);

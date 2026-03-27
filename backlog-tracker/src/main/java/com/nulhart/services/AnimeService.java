@@ -78,7 +78,7 @@ public class AnimeService {
         }
        return new AnimeDTO(anime.getId(),anime.getTitle(), anime.getStatus(),anime.getNumberOfEpisodes(),
                 anime.getEpisodesWatched(), anime.getScore(),anime.getImage(),
-                sequelResults,parentAnime, anime.getMalId(), anime.getStartDate(), anime.getEndDate(), new HashSet<String>());
+                sequelResults,parentAnime, anime.getMalId(), anime.getStartDate(), anime.getEndDate(), anime.getTags());
 
     }
 
@@ -184,7 +184,11 @@ public class AnimeService {
                     }
                 }
             }
-            anime.setTags(openAIService.getTags(animeEntity));
+            if(animeEntity.getTags().isEmpty()) {
+                animeEntity.setTags(openAIService.getTags(animeEntity));
+                System.out.println("anime tags "+ animeEntity.getTags());
+                animeRepository.save(animeEntity);
+            }
         }
         }
 
@@ -248,8 +252,8 @@ public class AnimeService {
                         }
                         anime.setMalId(userListDTO.node().id());
                     }
-                    if(anime.getStatus().equals("watching") && anime.getTags() != null
-                    && !anime.getTags().isEmpty()){
+                    if(anime.getStatus().equals("watching")
+                    && anime.getTags().isEmpty()){
                         Set<String> tags = openAIService.getTags(anime);
                         anime.setTags(tags);
                     }
