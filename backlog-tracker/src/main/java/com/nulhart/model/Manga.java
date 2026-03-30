@@ -49,6 +49,7 @@ public class Manga {
     private Set<Manga> sequels = new HashSet<>();
     @EqualsAndHashCode.Include
     private Integer malId;
+    private String image;
 
 
     public Manga(String title, String status){

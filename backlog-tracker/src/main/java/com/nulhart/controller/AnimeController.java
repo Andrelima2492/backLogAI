@@ -73,7 +73,7 @@ public class AnimeController {
 
 
     @PostMapping("/MAL/{username}")
-    public ResponseEntity<String> importMalByUser(@PathVariable String username, HttpSession session){
+    public ResponseEntity<String> importMalByUser(@PathVariable String username){
         animeService.importMalByUser(username);
         return  ResponseEntity.ok("Request started");
     }

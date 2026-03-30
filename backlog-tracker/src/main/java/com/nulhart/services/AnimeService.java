@@ -32,6 +32,7 @@ public class AnimeService {
     private AnimeRepository animeRepository;
     private MALClient malClient;
     private MALTokenRepository malTokenRepository;
+
     private OpenAIService openAIService;
     private final String regex = "^\\d{4}-\\d{2}-\\d{2}$";
 
@@ -195,7 +196,6 @@ public class AnimeService {
         @Async
         @Transactional
     public void importMalByUser(String username) {
-        System.out.println("Service Thread "+ Thread.currentThread().getName());
         com.nulhart.model.MALToken malToken = malTokenRepository.getMALTokenByUsername(username).orElseThrow(()->
                 new TokenNotFoundException("Token for user  "+username +" doesnt exist"));
         String token = malToken.getAccess_token();
@@ -211,7 +211,6 @@ public class AnimeService {
                 throttle();
                 List<MALUserListDTO> malUserListDTOS = malUserListResponse.data();
                 for (MALUserListDTO userListDTO : malUserListDTOS) {
-                    System.out.println("for anime " + userListDTO.node().title());
                     Anime anime;
                     MALDetailsNode detailsNode = getDetailsSafe(userListDTO.node().id(),
                             "start_date,end_date,num_episodes,related_anime");
@@ -224,12 +223,12 @@ public class AnimeService {
                         anime.setStatus(userListDTO.list_status().status());
                         anime.setScore(userListDTO.list_status().score());
                         anime.setEpisodesWatched(userListDTO.list_status().numWatchedEpisodes());
-                        if (anime.getNumberOfEpisodes() == null || anime.getEndDate() == null) {
+                        if (anime.getNumberOfEpisodes() == null || anime.getNumberOfEpisodes() == 0 ) {
                             anime.setNumberOfEpisodes(detailsNode.num_episodes());
-                            if (detailsNode.end_date() != null && detailsNode.end_date().matches(regex)) {
+                        }
+                        if (detailsNode.end_date() != null && detailsNode.end_date().matches(regex)) {
                                 LocalDate endDate = LocalDate.parse(detailsNode.end_date());
                                 anime.setEndDate(endDate);
-                            }
                         }
                     } else {
 
@@ -264,7 +263,6 @@ public class AnimeService {
                             if ("sequel".equals(relatedMALDTO.relation_type()) ||
                                     "prequel".equals(relatedMALDTO.relation_type()) || "spin_off".equals(relatedMALDTO.relation_type())
                                     || "side_story".equals(relatedMALDTO.relation_type())) {
-                                System.out.println(" related " + relatedMALDTO.node().title());
                                 MALDetailsNode relatedDetails = getDetailsSafe(relatedMALDTO.node().id(),
                                         "end_date,start_date,num_episodes");
                                 throttle();

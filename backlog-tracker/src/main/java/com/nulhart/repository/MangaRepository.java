@@ -10,4 +10,5 @@ public interface MangaRepository extends JpaRepository<Manga, String> {
 
     Set<Manga> findMangaByStatus(String status);
     Optional<Manga> getMangaByMalId(Integer id);
+    boolean existsMangaByMalId(Integer malId);
 }

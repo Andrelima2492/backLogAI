@@ -4,6 +4,7 @@ import com.nulhart.dto.manga.MangaDTO;
 import com.nulhart.services.MangaService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -34,7 +35,7 @@ public class MangaController {
     return mangaService.getMangaByMALId(id);
 }
 
-@GetMapping("/sequels/{id]")
+@GetMapping("/sequels/{id}")
     public Set<MangaDTO> getSequels(@PathVariable String id){
     return  mangaService.getSequels(id);
     }
@@ -57,5 +58,11 @@ public class MangaController {
     @PutMapping("/id/{id}")
     public void editMangaById(@RequestBody MangaDTO manga, @PathVariable String id){
         mangaService.editMangaById(manga, id);
+        }
+
+        @PostMapping("/MAL/user/{userName}")
+    public ResponseEntity<String> importByMALUser(@PathVariable String username){
+            mangaService.importMAL(username);
+            return ResponseEntity.ok("request started");
         }
 }

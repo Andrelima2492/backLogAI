@@ -22,6 +22,7 @@ public class MangaDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer malId;
+    private String image;
     private Set<RelatedMangaDTO> sequels = new HashSet<>();
     private RelatedMangaDTO parent;
 }

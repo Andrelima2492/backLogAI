@@ -1,6 +1,8 @@
 package com.nulhart.myanimelist;
 
 import com.nulhart.dto.anime.*;
+import com.nulhart.dto.manga.MALMangaDetailsNode;
+import com.nulhart.dto.manga.MALUserListMangaResponse;
 import io.netty.handler.codec.base64.Base64Encoder;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
@@ -39,6 +41,11 @@ public class MALClient {
                         "X-MAL-CLIENT-ID", malProperties.getApiKey()).retrieve().
                 body(MALDetailsNode.class);
     }
+    public MALMangaDetailsNode getMangaDetails(Integer mangaId, String fields){
+        return malRestClient.get().uri(uriBuilder -> uriBuilder.path("manga/"+mangaId)
+                .queryParam("fields", fields).build()).header(
+                        "X-MAL-CLIENT-ID", malProperties.getApiKey()).retrieve().body(MALMangaDetailsNode.class);
+    }
 
     public MALUserListResponse importMAL(String username, String status, Integer limit, Integer offset, String token){
     return  malRestClient.get().uri(uriBuilder -> uriBuilder.path("/users/"+username+"/animelist")
@@ -47,6 +54,14 @@ public class MALClient {
             .queryParam("fields", "list_status")
             .queryParam("offset", offset).build()).header("Authorization", "Bearer "+
             token).retrieve().body(MALUserListResponse.class);
+    }
+    public MALUserListMangaResponse importManga(String username, String status, Integer limit, Integer offset, String token){
+        return malRestClient.get().uri(uriBuilder ->uriBuilder.path("/users/"+username+"/mangalist")
+                .queryParam("status", status)
+                .queryParam("limit", limit)
+                .queryParam("fields", "list_status")
+                .queryParam("offset", offset).build()).header("Authorization", "Bearer "+
+                token).retrieve().body(MALUserListMangaResponse.class);
     }
 
 
