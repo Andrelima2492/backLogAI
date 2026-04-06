@@ -60,7 +60,7 @@ public class MangaController {
         mangaService.editMangaById(manga, id);
         }
 
-        @PostMapping("/MAL/user/{userName}")
+        @PostMapping("/MAL/user/{username}")
     public ResponseEntity<String> importByMALUser(@PathVariable String username){
             mangaService.importMAL(username);
             return ResponseEntity.ok("request started");

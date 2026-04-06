@@ -9,6 +9,7 @@ import com.nulhart.model.MALToken;
 import com.nulhart.model.Manga;
 import com.nulhart.myanimelist.MALClient;
 import com.nulhart.myanimelist.MALProperties;
+import com.nulhart.openai.OpenAIClient;
 import com.nulhart.repository.MALTokenRepository;
 import com.nulhart.repository.MangaRepository;
 import jakarta.transaction.Transactional;
@@ -32,6 +33,7 @@ public class MangaService {
     private final MALClient malClient;
     private final MALTokenRepository malTokenRepository;
     private final String regex = "^\\d{4}-\\d{2}-\\d{2}$";
+    private final OpenAIService openAIService;
 
 
     public MangaDTO convertToDTO(Manga manga) {
@@ -50,7 +52,7 @@ public class MangaService {
         }
         return new MangaDTO(manga.getId(), manga.getTitle(), manga.getStatus(), manga.getNumberOfChapters(), manga.getChaptersRead(),
                 manga.getNumberOfVolumes(), manga.getVolumesRead(), manga.getScore(), manga.getStartDate(), manga.getEndDate(),
-                manga.getMalId(), manga.getImage(), sequels, parent);
+                manga.getMalId(), manga.getImage(), sequels, parent, manga.getTags());
     }
 
     public Set<MangaDTO> getAllManga() {
@@ -105,6 +107,9 @@ public class MangaService {
         mangaEntity.setStartDate(manga.getStartDate());
         mangaEntity.setEndDate(manga.getEndDate());
         mangaEntity.setImage(manga.getImage());
+        if("reading".equals(manga.getStatus()) && mangaEntity.getTags().isEmpty()){
+            mangaEntity.setTags(openAIService.getTags(mangaEntity));
+        }
         if (manga.getParent() != null) {
             Manga parent = mangaRepository.getMangaByMalId(manga.getParent().malId()).orElseThrow(
                     () -> new MangaNotFoundException("no manga found in system with mal id" + manga.getParent().malId())
@@ -158,11 +163,14 @@ public class MangaService {
                         if (manga.getNumberOfVolumes() == null || manga.getNumberOfVolumes() == 0) {
                             manga.setNumberOfVolumes(detailsNode.num_volumes());
                         }
-                        if (manga.getEndDate() == null && detailsNode.end_date().matches(regex)) {
+                        if (manga.getEndDate() == null&& detailsNode.end_date()!=null && detailsNode.end_date().matches(regex)) {
                             manga.setEndDate(LocalDate.parse(detailsNode.end_date()));
                         }
                     } else {
                         manga = mountMangaFromAPI(userList, detailsNode);
+                    }
+                    if(statuses[i].equals("reading") && manga.getTags().isEmpty()){
+                        manga.setTags(openAIService.getTags(manga));
                     }
                     mangaRepository.save(manga);
                     if (!"dropped".equals(userList.list_status().status()) &&
@@ -170,14 +178,12 @@ public class MangaService {
                         for (RelatedMALDTO relatedMALDTO : detailsNode.related_manga()) {
                             if ("sequel".equals(relatedMALDTO.relation_type()) ||
                                     "prequel".equals(relatedMALDTO.relation_type()) ||
-                                    "spin_off".equals(relatedMALDTO.relation_type())
-                                    || "side_story".equals(relatedMALDTO.relation_type())) {
+                                    "spin_off".equals(relatedMALDTO.relation_type())) {
                                 System.out.println(" related " + relatedMALDTO.node().title());
                                 MALMangaDetailsNode relatedDetails =getDetailsSafe(relatedMALDTO.node().id(),
                                         "start_date,end_date,num_volumes,num_chapters");
                                 throttle();
                                 if("sequel".equals(relatedMALDTO.relation_type())
-                                ||"side_story".equals(relatedMALDTO.relation_type())
                                 ||"spin_off".equals(relatedMALDTO.relation_type())){
                                     if(mangaRepository.existsMangaByMalId(relatedMALDTO.node().id())){
                                         Manga sequel = mangaRepository.getMangaByMalId(relatedMALDTO.node().id())

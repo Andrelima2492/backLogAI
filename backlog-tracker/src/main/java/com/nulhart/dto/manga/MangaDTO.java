@@ -25,4 +25,5 @@ public class MangaDTO {
     private String image;
     private Set<RelatedMangaDTO> sequels = new HashSet<>();
     private RelatedMangaDTO parent;
+    private Set<String> tags = new HashSet<>();
 }

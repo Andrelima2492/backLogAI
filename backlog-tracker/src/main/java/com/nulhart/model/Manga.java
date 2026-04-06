@@ -50,6 +50,7 @@ public class Manga {
     @EqualsAndHashCode.Include
     private Integer malId;
     private String image;
+    private Set<String> tags = new HashSet<>();
 
 
     public Manga(String title, String status){

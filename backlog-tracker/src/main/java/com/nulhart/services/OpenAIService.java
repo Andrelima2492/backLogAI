@@ -3,7 +3,9 @@ package com.nulhart.services;
 import com.nulhart.dto.anime.AnimeTagsDTO;
 import com.nulhart.dto.game.GameDTO;
 import com.nulhart.dto.game.SuggestionDTO;
+import com.nulhart.dto.manga.MangaTagsDTO;
 import com.nulhart.model.Anime;
+import com.nulhart.model.Manga;
 import com.nulhart.openai.OpenAIClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -67,5 +69,27 @@ public class OpenAIService {
             AnimeTagsDTO dto = converter.convert(response);
             return dto.tags();
 
+    }
+
+    public Set<String> getTags(Manga manga){
+        String promptMessage = """
+                            You are an expert in manga.
+                            Based on the following manga, generate 3 to 6 descriptive tags.
+                        
+                            Manga:
+                            Title: %s
+                            Chapters: %s
+                            Volumes: %s
+                        
+                            {format}
+                            """.formatted(manga.getTitle(), manga.getNumberOfChapters(), manga.getNumberOfVolumes());
+        ParameterizedTypeReference<MangaTagsDTO> typeRef = new ParameterizedTypeReference<MangaTagsDTO>() {
+        };
+        BeanOutputConverter<MangaTagsDTO> converter = new BeanOutputConverter<>(typeRef);
+        PromptTemplate promptTemplate = new PromptTemplate(promptMessage);
+        Prompt prompt = promptTemplate.create(Map.of("format", converter.getFormat()));
+        String response = openAIClient.getChatClient().prompt(prompt).call().content();
+        MangaTagsDTO dto = converter.convert(response);
+        return dto.tags();
     }
 }
