@@ -29,7 +29,7 @@ public class Movie {
     private Integer score;
     private String image;
     private String director;
-    private Integer imdbId;
+    private String imdbId;
 
     public Movie(String name, String status){
         this.title = name;
@@ -37,7 +37,8 @@ public class Movie {
     }
 
     public Movie(String title, String status, LocalDate releaseDate,
-                 Integer watchYear, String image, String director, Integer imdbId) {
+                 Integer watchYear, String image, String director, String imdbId, Integer score
+    ) {
         this.title = title;
         this.status=status;
         this.releaseDate =  releaseDate;
@@ -45,5 +46,6 @@ public class Movie {
         this.image = image;
         this.director = director;
         this.imdbId = imdbId;
+        this.score = score;
     }
 }

@@ -15,6 +15,6 @@ public class MovieDTO {
     private Integer watchYear;
     private String image;
     private String director;
-    private Integer imdbId;
+    private String imdbId;
     private Integer score;
 }

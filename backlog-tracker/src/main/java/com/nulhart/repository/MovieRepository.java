@@ -9,6 +9,6 @@ import java.util.Set;
 public interface MovieRepository extends JpaRepository<Movie, String > {
     Set<Movie> findMoviesByWatchYear(String year);
     Set<Movie> findMoviesByStatus(String status);
-    Optional<Movie> findMovieByImdbId(Integer imdbId);
+    Optional<Movie> findMovieByImdbId(String imdbId);
     Set<Movie> findMoviesByDirector(String director);
 }

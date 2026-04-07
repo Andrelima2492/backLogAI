@@ -29,7 +29,7 @@ public class MovieController {
         return movieService.getMovieById(id);
     }
 
-    @GetMapping("/year/{year]")
+    @GetMapping("/year/{year}")
     public Set<MovieDTO> getMoviesWatchedInYear(@PathVariable String year){
         return movieService.getMoviesByYear(year);
     }
@@ -40,7 +40,7 @@ public class MovieController {
     }
 
     @GetMapping("imdbid/{imdbId}")
-    public MovieDTO getMovieByImdbId(@PathVariable Integer imdbId){
+    public MovieDTO getMovieByImdbId(@PathVariable String imdbId){
         return movieService.getMovieByIMDBId(imdbId);
     }
 
