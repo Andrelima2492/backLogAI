@@ -4,6 +4,7 @@ import com.nulhart.dto.movie.MovieDTO;
 import com.nulhart.exceptions.movies.MovieNotFoundException;
 import com.nulhart.model.Movie;
 import com.nulhart.repository.MovieRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -67,7 +68,8 @@ public class MovieService {
         movieRepository.deleteById(id);
 
     }
-
+    
+    @Transactional
     public void editMovie(MovieDTO movieDTO, String id) {
         Movie movie = movieRepository.findById(id).orElseThrow(()->
                 new MovieNotFoundException("No movie found with id "+id));
