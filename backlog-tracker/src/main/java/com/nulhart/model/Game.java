@@ -33,6 +33,7 @@ public class Game {
     @ManyToOne
     @JoinColumn(name="parent_game_id")
     private Game parentGame;
+    private Set<String> tags = new HashSet<>();
 
 
     public Game( @NotBlank @NotNull String title,

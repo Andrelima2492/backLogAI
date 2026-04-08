@@ -2,13 +2,16 @@ package com.nulhart.services;
 
 import com.nulhart.dto.anime.AnimeTagsDTO;
 import com.nulhart.dto.game.GameDTO;
+import com.nulhart.dto.game.GameTagsDTO;
 import com.nulhart.dto.game.SuggestionDTO;
 import com.nulhart.dto.manga.MangaTagsDTO;
 import com.nulhart.dto.movie.MovieTagsDTO;
 import com.nulhart.model.Anime;
+import com.nulhart.model.Game;
 import com.nulhart.model.Manga;
 import com.nulhart.model.Movie;
 import com.nulhart.openai.OpenAIClient;
+import com.nulhart.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -25,9 +28,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class OpenAIService {
     private final OpenAIClient openAIClient;
-    private final GameService gameService;
-    public List<SuggestionDTO> getSuggestions() {
-        List<GameDTO> allGames =gameService.getAllGames();
+    public List<SuggestionDTO> getSuggestions(List<GameDTO> allGames) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonGames = mapper.writeValueAsString(allGames);
         String promptMessaage ="You are an expert in video games both current and new" +
@@ -100,7 +101,7 @@ public class OpenAIService {
                             You are an expert in movies.
                             Based on the following movie, generate 3 to 6 descriptive tags.
                         
-                            Manga:
+                            Movie:
                             Title: %s
                           
                         
@@ -114,5 +115,28 @@ public class OpenAIService {
         String response = openAIClient.getChatClient().prompt(prompt).call().content();
         MovieTagsDTO dto = converter.convert(response);
         return dto.tags();
+    }
+
+    public Set<String> getTags(Game game){
+        String promptMessage = """
+                            You are an expert in video games.
+                            Based on the following game, generate 3 to 6 descriptive tags.
+                        
+                            Game:
+                            Title: %s
+                            
+                          
+                        
+                            {format}
+                            """.formatted(game.getTitle());
+        ParameterizedTypeReference<GameTagsDTO> typeRef = new ParameterizedTypeReference<GameTagsDTO>() {
+        };
+        BeanOutputConverter<GameTagsDTO> converter = new BeanOutputConverter<>(typeRef);
+        PromptTemplate promptTemplate = new PromptTemplate(promptMessage);
+        Prompt prompt = promptTemplate.create(Map.of("format", converter.getFormat()));
+        String response = openAIClient.getChatClient().prompt(prompt).call().content();
+        GameTagsDTO dto = converter.convert(response);
+        return  dto.tags();
+
     }
 }

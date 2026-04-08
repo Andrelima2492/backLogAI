@@ -34,6 +34,6 @@ public class GameDTO {
     private String image;
     private String parentGameName;
     private Set<AdditionDTO> additions = new HashSet<>();
-
+    private Set<String> tags = new HashSet<>();
 
 }

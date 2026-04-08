@@ -18,6 +18,7 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final RawgClient rawgClient;
+    private final OpenAIService openAIService;
 
 
         public List<GameDTO> getAllGames(){
@@ -49,7 +50,7 @@ public class GameService {
                 gameEntity.getAdditions().add(dlcEntity);
 
             }
-
+            gameEntity.setTags(openAIService.getTags(gameEntity));
             gameRepository.save( gameEntity);
 
     }
@@ -152,7 +153,7 @@ public class GameService {
             }
         return new GameDTO(game.getUUID(),game.getTitle(), game.getConsole(), game.getStatus(), game.getHoursPlayed(),
                 game.getOpinion(), game.getStartDate(), game.getDateOfCompletion(), game.getEstimatedPlayTime(),
-                game.getImage(),titleParent, mapAdditionListToDTO(game.getAdditions()));
+                game.getImage(),titleParent, mapAdditionListToDTO(game.getAdditions()), game.getTags());
     }
     private AdditionDTO mapAdditionToDTO(Game game){
             if(game== null){
@@ -214,7 +215,7 @@ public class GameService {
 
     private GameDTO createGameDTOFromSuggestionDTO(SuggestionDTO suggestionDTO){
             return new GameDTO(null,suggestionDTO.title(),suggestionDTO.console(),"not purchased", 0, "", null, null,
-                    null,"", "", null);
+                    null,"", "", null, null);
     }
 
     private List<GameDTO> createGameDTOListFromSuggestionDTOList(List<SuggestionDTO> suggestionDTOS){

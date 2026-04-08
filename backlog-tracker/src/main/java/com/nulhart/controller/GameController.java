@@ -84,7 +84,7 @@ public void editGameByTitle(@RequestBody GameDTO game, @RequestParam String titl
 }
 @GetMapping("/suggestions")
 public List<SuggestionDTO> getSuggestions(){
-        return openAIService.getSuggestions();
+        return openAIService.getSuggestions(getGames());
 
     }
     @GetMapping("/last5Finished")
