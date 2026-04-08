@@ -4,8 +4,10 @@ import com.nulhart.dto.anime.AnimeTagsDTO;
 import com.nulhart.dto.game.GameDTO;
 import com.nulhart.dto.game.SuggestionDTO;
 import com.nulhart.dto.manga.MangaTagsDTO;
+import com.nulhart.dto.movie.MovieTagsDTO;
 import com.nulhart.model.Anime;
 import com.nulhart.model.Manga;
+import com.nulhart.model.Movie;
 import com.nulhart.openai.OpenAIClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -90,6 +92,27 @@ public class OpenAIService {
         Prompt prompt = promptTemplate.create(Map.of("format", converter.getFormat()));
         String response = openAIClient.getChatClient().prompt(prompt).call().content();
         MangaTagsDTO dto = converter.convert(response);
+        return dto.tags();
+    }
+
+    public Set<String> getTags(Movie movie){
+        String promptMessage = """
+                            You are an expert in movies.
+                            Based on the following movie, generate 3 to 6 descriptive tags.
+                        
+                            Manga:
+                            Title: %s
+                          
+                        
+                            {format}
+                            """.formatted(movie.getTitle());
+        ParameterizedTypeReference<MovieTagsDTO> typeRef = new ParameterizedTypeReference<MovieTagsDTO>() {
+        };
+        BeanOutputConverter<MovieTagsDTO> converter = new BeanOutputConverter<>(typeRef);
+        PromptTemplate promptTemplate = new PromptTemplate(promptMessage);
+        Prompt prompt = promptTemplate.create(Map.of("format", converter.getFormat()));
+        String response = openAIClient.getChatClient().prompt(prompt).call().content();
+        MovieTagsDTO dto = converter.convert(response);
         return dto.tags();
     }
 }

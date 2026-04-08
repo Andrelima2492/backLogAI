@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class Movie {
     private String image;
     private String director;
     private String imdbId;
+    private Set<String> tags = new HashSet<>();
 
     public Movie(String name, String status){
         this.title = name;

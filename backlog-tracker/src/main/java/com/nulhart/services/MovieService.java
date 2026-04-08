@@ -22,10 +22,12 @@ import java.util.stream.Collectors;
 public class MovieService {
     private MovieRepository movieRepository;
     private OMDBClient omdbClient;
+    private OpenAIService openAIService;
 
     private MovieDTO mapToDTO(Movie movie){
         return new MovieDTO(movie.getId(), movie.getTitle(), movie.getStatus(), movie.getReleaseDate(),
-                movie.getWatchYear(), movie.getImage(),movie.getDirector(),movie.getImdbId(), movie.getScore());
+                movie.getWatchYear(), movie.getImage(),movie.getDirector(),movie.getImdbId(), movie.getScore(),
+                movie.getTags());
     }
 
     private Movie mapToEntity(MovieDTO movieDTO){
@@ -63,6 +65,7 @@ public class MovieService {
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH);
         movie.setReleaseDate(LocalDate.parse(movieResponse.Released(), formatter));
+        movie.setTags(openAIService.getTags(movie));
         movieRepository.save(movie);
     }
 
