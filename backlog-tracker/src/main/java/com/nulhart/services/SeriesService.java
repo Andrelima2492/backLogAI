@@ -1,27 +1,29 @@
 package com.nulhart.services;
 
+import com.nulhart.dto.series.OMDBSeriesResponse;
 import com.nulhart.dto.series.SeriesDTO;
 import com.nulhart.exceptions.series.SeriesNotFoundException;
 import com.nulhart.model.Series;
 import com.nulhart.omdb.OMDBClient;
 import com.nulhart.repository.SeriesRepository;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class SeriesService {
     private SeriesRepository seriesRepository;
     private OpenAIService openAIService;
     private OMDBClient omdbClient;
-    
+
     public SeriesDTO mapToDTO(Series series){
         return new SeriesDTO(series.getId(), series.getTitle(), series.getStatus(), series.getNumberOfSeasons(),
                 series.getSeasonsWatched(), series.getScore(), series.getImdbId(), series.getImage(), series.getYearsAired(),
-                series.getYearWatched());
+                series.getYearWatched(), series.getTags());
     }
 
     public Series mapToEntity(SeriesDTO seriesDTO){
@@ -59,7 +61,14 @@ public class SeriesService {
     }
 
     public void createSeries(SeriesDTO seriesDTO) {
-        seriesRepository.save(mapToEntity(seriesDTO));
+        Series series = mapToEntity(seriesDTO);
+        OMDBSeriesResponse seriesResponse = omdbClient.searchSeries(seriesDTO.getTitle());
+        series.setImage(seriesResponse.Poster());
+        series.setImdbId(seriesResponse.imdbID());
+        series.setNumberOfSeasons(seriesResponse.totalSeasons());
+        series.setYearsAired(seriesResponse.Year());
+        series.setTags(openAIService.getTags(series));
+        seriesRepository.save(series);
     }
 
 
@@ -84,5 +93,8 @@ public class SeriesService {
         series.setImdbId(seriesDTO.getImdbID());
         series.setImage(seriesDTO.getImage());
         series.setYearWatched(seriesDTO.getYearWatched());
+        if(series.getTags().isEmpty()){
+            series.setTags(openAIService.getTags(series));
+        }
     }
 }

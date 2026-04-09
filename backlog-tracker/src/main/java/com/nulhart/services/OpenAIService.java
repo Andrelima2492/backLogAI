@@ -6,12 +6,13 @@ import com.nulhart.dto.game.GameTagsDTO;
 import com.nulhart.dto.game.SuggestionDTO;
 import com.nulhart.dto.manga.MangaTagsDTO;
 import com.nulhart.dto.movie.MovieTagsDTO;
+import com.nulhart.dto.series.SeriesTagsDTO;
 import com.nulhart.model.Anime;
 import com.nulhart.model.Game;
 import com.nulhart.model.Manga;
 import com.nulhart.model.Movie;
 import com.nulhart.openai.OpenAIClient;
-import com.nulhart.repository.GameRepository;
+import com.nulhart.model.Series;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -138,5 +139,29 @@ public class OpenAIService {
         GameTagsDTO dto = converter.convert(response);
         return  dto.tags();
 
+    }
+
+    public Set<String> getTags(Series series){
+        String promptMessage = """
+                            You are an expert in tv series.
+                            Based on the following game, generate 3 to 6 descriptive tags.
+                        
+                            Game:
+                            Title: %s
+                            Number of Seasons: %s
+                            Years Aired: %s
+                            
+                          
+                        
+                            {format}
+                            """.formatted(series.getTitle(), series.getNumberOfSeasons(), series.getYearsAired());
+        ParameterizedTypeReference<SeriesTagsDTO> typeRef = new ParameterizedTypeReference<SeriesTagsDTO>() {
+        };
+        BeanOutputConverter<SeriesTagsDTO> converter = new BeanOutputConverter<>(typeRef);
+        PromptTemplate promptTemplate = new PromptTemplate(promptMessage);
+        Prompt prompt = promptTemplate.create(Map.of("format", converter.getFormat()));
+        String response = openAIClient.getChatClient().prompt(prompt).call().content();
+        SeriesTagsDTO dto = converter.convert(response);
+        return  dto.tags();
     }
 }

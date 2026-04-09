@@ -2,6 +2,7 @@ package com.nulhart.controller;
 
 import com.nulhart.dto.series.SeriesDTO;
 import com.nulhart.services.SeriesService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/series")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class SeriesController {
     private SeriesService seriesService;
 

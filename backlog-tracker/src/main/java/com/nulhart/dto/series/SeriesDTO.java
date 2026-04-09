@@ -3,6 +3,9 @@ package com.nulhart.dto.series;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 public class SeriesDTO {
@@ -16,4 +19,5 @@ public class SeriesDTO {
     private String image;
     private String yearsAired;
     private Integer yearWatched;
+    private Set<String> tags = new HashSet<>();
 }
