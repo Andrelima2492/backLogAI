@@ -13,7 +13,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -104,7 +106,7 @@ public class GameService {
     public void insertGames(List<GameDTO> games) {
         List<GameDTO> newGamesToAdd = new ArrayList<GameDTO>();
         for(GameDTO g : games){
-            if(!getAllGames().contains(g)){
+            if(!gameRepository.findAll().stream().map(this::mapToDTO).collect(Collectors.toSet()).contains(g)){
                 newGamesToAdd.add(g);
             }
         }
@@ -244,4 +246,21 @@ public class GameService {
 
 
     }
+
+    @Transactional
+    public void changeStatus(String id, GameDTO gameDTO) {
+            Game gameEntity = gameRepository.findById(id).orElseThrow(
+                    ()->new GameNotFoundException("No game found with id "+id));
+            if("completed".equals(gameDTO.getStatus())){
+                gameEntity.setStatus(gameDTO.getStatus());
+                gameEntity.setOpinion(gameDTO.getOpinion());
+                gameEntity.setDateOfCompletion( LocalDate.now());
+                gameEntity.setHoursPlayed(gameDTO.getHoursPlayed());
+            }else if("playing".equals(gameDTO.getStatus())){
+                gameEntity.setStatus(gameDTO.getStatus());
+                gameEntity.setStartDate(LocalDate.now());
+            }else{
+                gameEntity.setStatus(gameDTO.getStatus());
+            }
+        }
 }

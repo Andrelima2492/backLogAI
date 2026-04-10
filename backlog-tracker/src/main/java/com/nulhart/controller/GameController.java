@@ -97,5 +97,11 @@ public List<SuggestionDTO> getSuggestions(){
     public void editGameById(@RequestBody GameDTO game, @PathVariable String id){
         gameService.editGameById(game, id);
     }
+
+    @PatchMapping("/{id}/status")
+    public void changeStatus(@PathVariable String id, @RequestBody GameDTO gameDTO){
+        gameService.changeStatus(id,gameDTO);
+    }
+
 }
 
