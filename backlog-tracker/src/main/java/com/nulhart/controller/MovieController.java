@@ -5,6 +5,7 @@ import com.nulhart.services.MovieService;
 import com.nulhart.services.OpenAIService;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +21,11 @@ public class MovieController {
     private OpenAIService openAIService;
 
     @GetMapping
-    public List<MovieDTO> getAllMovies(){
-        return movieService.getAllMovies();
+    public Page<MovieDTO> getAllMovies(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ){
+        return movieService.getAllMovies(page,size);
     }
 
     @GetMapping("/id/{id}")

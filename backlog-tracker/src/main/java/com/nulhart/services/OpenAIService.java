@@ -13,6 +13,7 @@ import com.nulhart.model.Manga;
 import com.nulhart.model.Movie;
 import com.nulhart.openai.OpenAIClient;
 import com.nulhart.model.Series;
+import com.nulhart.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -29,9 +30,10 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class OpenAIService {
     private final OpenAIClient openAIClient;
-    public List<SuggestionDTO> getSuggestions(List<GameDTO> allGames) {
+    private final GameRepository gameeRepository;
+    public List<SuggestionDTO> getSuggestions() {
         ObjectMapper mapper = new ObjectMapper();
-        String jsonGames = mapper.writeValueAsString(allGames);
+        String jsonGames = mapper.writeValueAsString(gameeRepository.findAll());
         String promptMessaage ="You are an expert in video games both current and new" +
                 "Based on the following backlog JSON between triple quotes that represents the backlog of" +
                 " games a person has played or is playing and their opinions about it:" +

@@ -5,6 +5,7 @@ import com.nulhart.services.AnimeService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +20,11 @@ public class AnimeController {
     private AnimeService animeService;
 
     @GetMapping
-    public List<AnimeDTO> getAllAnime(){
-        return animeService.getAllAnime();
+    public Page<AnimeDTO> getAllAnime(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size
+    ){
+        return animeService.getAllAnime(page,size);
     }
 
     @GetMapping("/id/{uuid}")

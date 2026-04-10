@@ -14,6 +14,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
@@ -36,8 +39,10 @@ public class AnimeService {
     private OpenAIService openAIService;
     private final String regex = "^\\d{4}-\\d{2}-\\d{2}$";
 
-    public List<AnimeDTO> getAllAnime() {
-        return animeRepository.findAll().stream().map(this::convertAnimeToDTO).toList();
+    public Page<AnimeDTO> getAllAnime(int page, int size) {
+      Pageable pageable= PageRequest.of(page, size);
+      Page<Anime> animePage = animeRepository.findAll(pageable);
+      return animePage.map(this::convertAnimeToDTO);
     }
 
 

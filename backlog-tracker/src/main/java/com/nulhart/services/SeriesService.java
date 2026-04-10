@@ -9,6 +9,9 @@ import com.nulhart.repository.SeriesRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,8 +40,10 @@ public class SeriesService {
         series.setYearWatched(seriesDTO.getYearWatched());
         return  series;
     }
-    public List<SeriesDTO> getAllSeries() {
-        return seriesRepository.findAll().stream().map(this::mapToDTO).toList();
+    public Page<SeriesDTO> getAllSeries(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Series> pageSeries = seriesRepository.findAll(pageable);
+        return pageSeries.map(this::mapToDTO);
     }
 
 

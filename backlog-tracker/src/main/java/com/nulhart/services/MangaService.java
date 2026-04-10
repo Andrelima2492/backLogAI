@@ -1,6 +1,5 @@
 package com.nulhart.services;
 
-import com.nulhart.dto.anime.MALDetailsNode;
 import com.nulhart.dto.anime.RelatedMALDTO;
 import com.nulhart.dto.manga.*;
 import com.nulhart.exceptions.manga.MangaNotFoundException;
@@ -9,21 +8,21 @@ import com.nulhart.model.MALToken;
 import com.nulhart.model.Manga;
 import com.nulhart.myanimelist.MALClient;
 import com.nulhart.myanimelist.MALProperties;
-import com.nulhart.openai.OpenAIClient;
 import com.nulhart.repository.MALTokenRepository;
 import com.nulhart.repository.MangaRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 @Service
 @AllArgsConstructor
@@ -55,8 +54,10 @@ public class MangaService {
                 manga.getMalId(), manga.getImage(), sequels, parent, manga.getTags());
     }
 
-    public Set<MangaDTO> getAllManga() {
-        return mangaRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toSet());
+    public Page<MangaDTO> getAllManga(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Manga> pageManga = mangaRepository.findAll(pageable);
+        return pageManga.map(this::convertToDTO);
     }
 
     public MangaDTO getMangaById(String id) {

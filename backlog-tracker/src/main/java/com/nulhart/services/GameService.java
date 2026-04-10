@@ -8,6 +8,9 @@ import com.nulhart.repository.GameRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -21,8 +24,10 @@ public class GameService {
     private final OpenAIService openAIService;
 
 
-        public List<GameDTO> getAllGames(){
-            return gameRepository.findAll().stream().map(this::mapToDTO).toList();
+        public Page<GameDTO> getAllGames(int page, int size){
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Game> gamePage = gameRepository.findAll(pageable);
+            return gamePage.map(this::mapToDTO);
         }
 
         public void insertGame(GameDTO game) {

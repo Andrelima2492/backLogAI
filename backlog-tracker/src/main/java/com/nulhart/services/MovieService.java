@@ -8,6 +8,9 @@ import com.nulhart.omdb.OMDBClient;
 import com.nulhart.repository.MovieRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -34,8 +37,11 @@ public class MovieService {
         return new Movie(movieDTO.getTitle(), movieDTO.getStatus(), movieDTO.getReleaseDate(),
                 movieDTO.getWatchYear(), movieDTO.getImage(), movieDTO.getDirector(), movieDTO.getImdbId(), movieDTO.getScore());
     }
-    public List<MovieDTO> getAllMovies() {
-        return movieRepository.findAll().stream().map(this::mapToDTO).toList();
+    public Page<MovieDTO> getAllMovies(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Movie> pageMovie = movieRepository.findAll(pageable);
+        return pageMovie.map(this::mapToDTO);
+
     }
 
     public MovieDTO getMovieById(String id) {

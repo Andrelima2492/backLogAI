@@ -3,7 +3,7 @@ package com.nulhart.controller;
 import com.nulhart.dto.series.SeriesDTO;
 import com.nulhart.services.SeriesService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,8 +15,11 @@ public class SeriesController {
     private SeriesService seriesService;
 
      @GetMapping
-    public List<SeriesDTO> getAllSeries(){
-         return  seriesService.getAllSeries();
+    public Page<SeriesDTO> getAllSeries(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+     ){
+         return  seriesService.getAllSeries(page,size);
      }
 
      @GetMapping("/id/{id}")

@@ -4,6 +4,7 @@ import com.nulhart.dto.manga.MangaDTO;
 import com.nulhart.services.MangaService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +17,11 @@ public class MangaController {
     private MangaService mangaService;
 
 @GetMapping
-    public Set<MangaDTO> getAllManga(){
-    return mangaService.getAllManga();
+    public Page<MangaDTO> getAllManga(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size
+){
+    return mangaService.getAllManga(page, size);
 }
 
 @GetMapping("/id/{id}")

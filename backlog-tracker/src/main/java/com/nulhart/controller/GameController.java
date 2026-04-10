@@ -5,6 +5,7 @@ import com.nulhart.dto.game.SuggestionDTO;
 import com.nulhart.services.GameService;
 import com.nulhart.services.OpenAIService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -19,11 +20,12 @@ public class GameController {
 
 
     @GetMapping
-    public List<GameDTO> getGames(){
-        LocalDate startDateAC = LocalDate.parse("2025-11-21");
-        LocalDate endDateAC = LocalDate.parse("2026-02-16");
-        LocalDate startDateOP = LocalDate.parse("2026-02-18");
-        return gameService.getAllGames();
+    public Page<GameDTO> getGames(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ){
+
+        return gameService.getAllGames(page,size);
     }
 
     @GetMapping("/rawgId/{id}")
@@ -84,7 +86,7 @@ public void editGameByTitle(@RequestBody GameDTO game, @RequestParam String titl
 }
 @GetMapping("/suggestions")
 public List<SuggestionDTO> getSuggestions(){
-        return openAIService.getSuggestions(getGames());
+        return openAIService.getSuggestions();
 
     }
     @GetMapping("/last5Finished")
