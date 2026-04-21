@@ -415,5 +415,37 @@ public class AnimeService {
     }
 
 
+    @Transactional
+    public void changeStatus(AnimeDTO animeDTO, String id) {
+       Anime anime = animeRepository.findById(id).orElseThrow(
+               ()->new AnimeNotFoundException("No anime found with id "+id ));
+
+       if("watching".equals(animeDTO.getStatus())){
+           anime.setStartDate(LocalDate.now());
+           anime.setEpisodesWatched(0);
+       }else if("completed".equals(animeDTO.getStatus())){
+           anime.setScore(animeDTO.getScore());
+           anime.setEndDate(animeDTO.getEndDate());
+           anime.setEpisodesWatched(anime.getNumberOfEpisodes());
+       }
+       anime.setStatus(animeDTO.getStatus());
+    }
+
+    @Transactional
+    public void watchEpisode(String id) {
+        Anime anime = animeRepository.findById(id).orElseThrow(
+                ()-> new AnimeNotFoundException("No anime found with id "+id));
+        if(!anime.getStatus().equals("watching") && !anime.getStatus().equals("completed")){
+            anime.setStatus("watching");
+        }
+        if(anime.getEpisodesWatched()!= null && anime.getNumberOfEpisodes()!=null &&
+                anime.getEpisodesWatched() < anime.getNumberOfEpisodes()){
+            anime.setEpisodesWatched(anime.getEpisodesWatched()+1);
+            if(anime.getEpisodesWatched() == anime.getNumberOfEpisodes()){
+                anime.setStatus("completed");
+            }
+
+        }
+    }
 }
 

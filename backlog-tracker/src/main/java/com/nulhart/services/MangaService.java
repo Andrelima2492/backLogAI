@@ -108,7 +108,7 @@ public class MangaService {
         mangaEntity.setStartDate(manga.getStartDate());
         mangaEntity.setEndDate(manga.getEndDate());
         mangaEntity.setImage(manga.getImage());
-        if("reading".equals(manga.getStatus()) && mangaEntity.getTags().isEmpty()){
+        if ("reading".equals(manga.getStatus()) && mangaEntity.getTags().isEmpty()) {
             mangaEntity.setTags(openAIService.getTags(mangaEntity));
         }
         if (manga.getParent() != null) {
@@ -164,13 +164,13 @@ public class MangaService {
                         if (manga.getNumberOfVolumes() == null || manga.getNumberOfVolumes() == 0) {
                             manga.setNumberOfVolumes(detailsNode.num_volumes());
                         }
-                        if (manga.getEndDate() == null&& detailsNode.end_date()!=null && detailsNode.end_date().matches(regex)) {
+                        if (manga.getEndDate() == null && detailsNode.end_date() != null && detailsNode.end_date().matches(regex)) {
                             manga.setEndDate(LocalDate.parse(detailsNode.end_date()));
                         }
                     } else {
                         manga = mountMangaFromAPI(userList, detailsNode);
                     }
-                    if(statuses[i].equals("reading") && manga.getTags().isEmpty()){
+                    if (statuses[i].equals("reading") && manga.getTags().isEmpty()) {
                         manga.setTags(openAIService.getTags(manga));
                     }
                     mangaRepository.save(manga);
@@ -181,33 +181,34 @@ public class MangaService {
                                     "prequel".equals(relatedMALDTO.relation_type()) ||
                                     "spin_off".equals(relatedMALDTO.relation_type())) {
                                 System.out.println(" related " + relatedMALDTO.node().title());
-                                MALMangaDetailsNode relatedDetails =getDetailsSafe(relatedMALDTO.node().id(),
+                                MALMangaDetailsNode relatedDetails = getDetailsSafe(relatedMALDTO.node().id(),
                                         "start_date,end_date,num_volumes,num_chapters");
                                 throttle();
-                                if("sequel".equals(relatedMALDTO.relation_type())
-                                ||"spin_off".equals(relatedMALDTO.relation_type())){
-                                    if(mangaRepository.existsMangaByMalId(relatedMALDTO.node().id())){
+                                if ("sequel".equals(relatedMALDTO.relation_type())
+                                        || "spin_off".equals(relatedMALDTO.relation_type())) {
+                                    if (mangaRepository.existsMangaByMalId(relatedMALDTO.node().id())) {
                                         Manga sequel = mangaRepository.getMangaByMalId(relatedMALDTO.node().id())
-                                                .orElseThrow(()->new MangaNotFoundException("no manga found in database with " +
-                                                        "Mal id "+ relatedMALDTO.node().id()));
+                                                .orElseThrow(() -> new MangaNotFoundException("no manga found in database with " +
+                                                        "Mal id " + relatedMALDTO.node().id()));
                                         sequel.setParent(manga);
                                         manga.getSequels().add(sequel);
                                         mangaRepository.save(sequel);
-                                    }else{
+                                    } else {
                                         Manga sequel = mountRelatedFromAPI(relatedMALDTO, relatedDetails);
                                         sequel.setParent(manga);
                                         manga.getSequels().add(sequel);
                                         mangaRepository.save(sequel);
                                     }
-                                }if("prequel".equals(relatedMALDTO.relation_type())){
-                                    if(mangaRepository.existsMangaByMalId(relatedMALDTO.node().id())){
+                                }
+                                if ("prequel".equals(relatedMALDTO.relation_type())) {
+                                    if (mangaRepository.existsMangaByMalId(relatedMALDTO.node().id())) {
                                         Manga prequel = mangaRepository.getMangaByMalId(relatedMALDTO.node().id())
-                                                .orElseThrow(()->new MangaNotFoundException("no manga found in database" +
-                                                        "with MAL id "+ relatedMALDTO.node().id()));
+                                                .orElseThrow(() -> new MangaNotFoundException("no manga found in database" +
+                                                        "with MAL id " + relatedMALDTO.node().id()));
                                         prequel.getSequels().add(manga);
                                         manga.setParent(prequel);
                                         mangaRepository.save(prequel);
-                                    }else{
+                                    } else {
                                         Manga prequel = mountRelatedFromAPI(relatedMALDTO, relatedDetails);
                                         prequel.getSequels().add(manga);
                                         manga.setParent(prequel);
@@ -220,13 +221,14 @@ public class MangaService {
                         }
                         mangaRepository.save(manga);
                     }
-                }if(malMangaResponse.paging().next()!=null){
-                    offset = offset+500;
-                    malMangaResponse = malClient.importManga(username,statuses[i],
-                            limit,offset,token);
+                }
+                if (malMangaResponse.paging().next() != null) {
+                    offset = offset + 500;
+                    malMangaResponse = malClient.importManga(username, statuses[i],
+                            limit, offset, token);
                     throttle();
-                }else{
-                    over=true;
+                } else {
+                    over = true;
                 }
 
 
@@ -260,7 +262,7 @@ public class MangaService {
         return manga;
     }
 
-    private Manga mountRelatedFromAPI(RelatedMALDTO relatedMALDTO, MALMangaDetailsNode relatedDetails){
+    private Manga mountRelatedFromAPI(RelatedMALDTO relatedMALDTO, MALMangaDetailsNode relatedDetails) {
         Manga manga = new Manga(relatedMALDTO.node().title(), "plan_to_read");
         manga.setScore(null);
         manga.setImage(relatedMALDTO.node().main_picture().medium());
@@ -292,8 +294,41 @@ public class MangaService {
                 Thread.currentThread().interrupt();
             }
         }
-        System.out.println("Skipping manga "+id +  " after retries");
+        System.out.println("Skipping manga " + id + " after retries");
         return null;
     }
 
+    @Transactional
+    public void readChapter(String id) {
+        Manga manga = mangaRepository.findById(id).orElseThrow(
+                () -> new MangaNotFoundException("No manga found with id " + id));
+        if (!manga.getStatus().equals("reading") && !manga.getStatus().equals("completed")) {
+            manga.setStatus("reading");
+        }
+        if (manga.getChaptersRead() != null && manga.getNumberOfChapters() != null &&
+                manga.getChaptersRead() < manga.getNumberOfChapters()) {
+            manga.setChaptersRead(manga.getChaptersRead() + 1);
+            if (manga.getChaptersRead() == manga.getNumberOfChapters()) {
+                manga.setStatus("completed");
+            }
+
+        }
+
+    }
+
+    @Transactional
+    public void readVolume(String id) {
+        Manga manga = mangaRepository.findById(id).orElseThrow(
+                () -> new MangaNotFoundException("No manga found with id " + id));
+        if (!manga.getStatus().equals("reading") && !manga.getStatus().equals("completed")) {
+            manga.setStatus("reading");
+        }
+        if (manga.getVolumesRead() != null && manga.getNumberOfVolumes() != null &&
+                manga.getVolumesRead() < manga.getNumberOfVolumes()) {
+            manga.setVolumesRead(manga.getVolumesRead() + 1);
+            if (manga.getVolumesRead() == manga.getNumberOfVolumes()) {
+                manga.setStatus("completed");
+            }
+        }
+    }
 }

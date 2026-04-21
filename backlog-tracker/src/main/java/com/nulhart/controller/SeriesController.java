@@ -63,4 +63,9 @@ public class SeriesController {
          seriesService.editSeries(id, seriesDTO);
      }
 
+     @PatchMapping("/watch/{id}")
+    public void watchEpisode(@PathVariable String id){
+         seriesService.watchSeason(id);
+     }
+
 }

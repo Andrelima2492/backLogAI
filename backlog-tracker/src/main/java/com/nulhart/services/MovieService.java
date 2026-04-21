@@ -106,4 +106,15 @@ public class MovieService {
         movie.setWatchYear(movieDTO.getWatchYear());
 
     }
+
+    @Transactional
+    public void changeStatus(MovieDTO movieDTO, String id) {
+        Movie movie = movieRepository.findById(id).orElseThrow(
+                ()-> new MovieNotFoundException("No movie found with id "+id));
+        if("completed".equals(movieDTO.getStatus())){
+            movie.setWatchYear(LocalDate.now().getYear());
+            movie.setScore(movieDTO.getScore());
+        }
+        movie.setStatus(movieDTO.getStatus());
+    }
 }

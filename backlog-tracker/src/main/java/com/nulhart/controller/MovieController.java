@@ -76,4 +76,8 @@ public class MovieController {
     public void editMovie(@RequestBody MovieDTO movieDTO, @PathVariable String id){
         movieService.editMovie(movieDTO,id);
     }
+    @PatchMapping("/{id}/status")
+    public void changeStatus(@RequestBody MovieDTO movieDTO, @PathVariable String id){
+        movieService.changeStatus(movieDTO, id);
+    }
 }

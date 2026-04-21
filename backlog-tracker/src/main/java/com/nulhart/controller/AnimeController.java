@@ -86,4 +86,13 @@ public class AnimeController {
         animeService.login(response, session);
     }
 
+    @PatchMapping("/{id}/status")
+    public void changeStatus(@RequestBody AnimeDTO animeDTO, @PathVariable String id){
+        animeService.changeStatus(animeDTO, id);
+    }
+
+    @PatchMapping("/{id}/watch")
+    public void watchEpisode(@PathVariable String id){
+        animeService.watchEpisode(id);
+    }
 }

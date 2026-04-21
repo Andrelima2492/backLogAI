@@ -2,7 +2,9 @@ package com.nulhart.services;
 
 import com.nulhart.dto.series.OMDBSeriesResponse;
 import com.nulhart.dto.series.SeriesDTO;
+import com.nulhart.exceptions.anime.AnimeNotFoundException;
 import com.nulhart.exceptions.series.SeriesNotFoundException;
+import com.nulhart.model.Anime;
 import com.nulhart.model.Series;
 import com.nulhart.omdb.OMDBClient;
 import com.nulhart.repository.SeriesRepository;
@@ -23,13 +25,13 @@ public class SeriesService {
     private OpenAIService openAIService;
     private OMDBClient omdbClient;
 
-    public SeriesDTO mapToDTO(Series series){
+    public SeriesDTO mapToDTO(Series series) {
         return new SeriesDTO(series.getId(), series.getTitle(), series.getStatus(), series.getNumberOfSeasons(),
                 series.getSeasonsWatched(), series.getScore(), series.getImdbId(), series.getImage(), series.getYearsAired(),
                 series.getYearWatched(), series.getTags());
     }
 
-    public Series mapToEntity(SeriesDTO seriesDTO){
+    public Series mapToEntity(SeriesDTO seriesDTO) {
         Series series = new Series(seriesDTO.getTitle(), seriesDTO.getStatus());
         series.setScore(seriesDTO.getScore());
         series.setImage(seriesDTO.getImage());
@@ -38,10 +40,11 @@ public class SeriesService {
         series.setNumberOfSeasons(seriesDTO.getNumberOfSeasons());
         series.setYearsAired(seriesDTO.getYearsAired());
         series.setYearWatched(seriesDTO.getYearWatched());
-        return  series;
+        return series;
     }
+
     public Page<SeriesDTO> getAllSeries(int page, int size) {
-        Pageable pageable = PageRequest.of(page,size);
+        Pageable pageable = PageRequest.of(page, size);
         Page<Series> pageSeries = seriesRepository.findAll(pageable);
         return pageSeries.map(this::mapToDTO);
     }
@@ -49,12 +52,12 @@ public class SeriesService {
 
     public SeriesDTO getSeriesById(String id) {
         return mapToDTO(seriesRepository.findById(id).orElseThrow(
-                ()->new SeriesNotFoundException("No Series found with id "+id)));
+                () -> new SeriesNotFoundException("No Series found with id " + id)));
     }
 
     public SeriesDTO getSeriesByImdbId(String imdbId) {
         return mapToDTO(seriesRepository.findSeriesByImdbId(imdbId).orElseThrow(
-                ()->new SeriesNotFoundException("No Series found with imdbId "+ imdbId)));
+                () -> new SeriesNotFoundException("No Series found with imdbId " + imdbId)));
     }
 
     public List<SeriesDTO> getSeriesByStatus(String status) {
@@ -88,7 +91,7 @@ public class SeriesService {
     @Transactional
     public void editSeries(String id, SeriesDTO seriesDTO) {
         Series series = seriesRepository.findById(id).orElseThrow(
-                ()->new SeriesNotFoundException("No Series found with id "+id));
+                () -> new SeriesNotFoundException("No Series found with id " + id));
         series.setStatus(seriesDTO.getStatus());
         series.setTitle(seriesDTO.getTitle());
         series.setScore(seriesDTO.getScore());
@@ -98,8 +101,24 @@ public class SeriesService {
         series.setImdbId(seriesDTO.getImdbID());
         series.setImage(seriesDTO.getImage());
         series.setYearWatched(seriesDTO.getYearWatched());
-        if(series.getTags().isEmpty()){
+        if (series.getTags().isEmpty()) {
             series.setTags(openAIService.getTags(series));
+        }
+    }
+
+    public void watchSeason(String id) {
+        Series series = seriesRepository.findById(id).orElseThrow(
+                () -> new SeriesNotFoundException("No Series found with id " + id));
+
+        if (!series.getStatus().equals("watching") && !series.getStatus().equals("completed")) {
+            series.setStatus("watching");
+        }
+        if (series.getSeasonsWatched() != null && series.getNumberOfSeasons() != null &&
+                series.getSeasonsWatched() < series.getNumberOfSeasons()) {
+            series.setSeasonsWatched(series.getSeasonsWatched() + 1);
+            if (series.getSeasonsWatched() == series.getNumberOfSeasons()) {
+                series.setStatus("completed");
+            }
         }
     }
 }

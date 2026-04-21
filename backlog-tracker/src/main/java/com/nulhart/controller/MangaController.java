@@ -69,4 +69,14 @@ public class MangaController {
             mangaService.importMAL(username);
             return ResponseEntity.ok("request started");
         }
+
+        @PatchMapping("/read-chapter/{id}")
+    public void readChapter(@PathVariable String id){
+        mangaService.readChapter(id);
+        }
+
+        @PatchMapping("/read-volume/{id}")
+    public void readVolume(@PathVariable String id){
+            mangaService.readVolume(id);
+        }
 }
